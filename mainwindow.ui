@@ -1,24 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow" >
-  <property name="geometry" >
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>600</width>
+    <height>470</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QMenuBar" name="menuBar" />
-  <widget class="QToolBar" name="mainToolBar" />
-  <widget class="QWidget" name="centralWidget" />
-  <widget class="QStatusBar" name="statusBar" />
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QOpenGLWidget" name="openGLWidget">
+    <property name="geometry">
+     <rect>
+      <x>-1</x>
+      <y>-1</y>
+      <width>601</width>
+      <height>301</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QSlider" name="xRotSlider">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>310</y>
+      <width>581</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>x Rotation Slider</string>
+    </property>
+    <property name="statusTip">
+     <string>X Rotation</string>
+    </property>
+    <property name="whatsThis">
+     <string>xSlider</string>
+    </property>
+    <property name="maximum">
+     <number>360</number>
+    </property>
+    <property name="singleStep">
+     <number>18</number>
+    </property>
+    <property name="pageStep">
+     <number>15</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <property name="tickPosition">
+     <enum>QSlider::TicksAbove</enum>
+    </property>
+    <property name="tickInterval">
+     <number>15</number>
+    </property>
+   </widget>
+   <widget class="QSlider" name="yRotSlider">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>340</y>
+      <width>581</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Y Rotation Slider</string>
+    </property>
+    <property name="statusTip">
+     <string>Y Rotation</string>
+    </property>
+    <property name="maximum">
+     <number>360</number>
+    </property>
+    <property name="singleStep">
+     <number>18</number>
+    </property>
+    <property name="pageStep">
+     <number>15</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <property name="tickPosition">
+     <enum>QSlider::TicksAbove</enum>
+    </property>
+    <property name="tickInterval">
+     <number>15</number>
+    </property>
+   </widget>
+   <widget class="QSlider" name="zRotSlider">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>370</y>
+      <width>581</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Z Rotation Slider</string>
+    </property>
+    <property name="statusTip">
+     <string>Z Rotation</string>
+    </property>
+    <property name="maximum">
+     <number>360</number>
+    </property>
+    <property name="singleStep">
+     <number>18</number>
+    </property>
+    <property name="pageStep">
+     <number>15</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <property name="tickPosition">
+     <enum>QSlider::TicksAbove</enum>
+    </property>
+    <property name="tickInterval">
+     <number>15</number>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>600</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuTest1">
+    <property name="title">
+     <string>Test1</string>
+    </property>
+    <addaction name="actionHallo"/>
+    <addaction name="actionDas"/>
+    <addaction name="actionK_nnte"/>
+    <addaction name="actionWird"/>
+    <addaction name="actionNe"/>
+    <addaction name="action1_0"/>
+    <addaction name="separator"/>
+    <addaction name="actionEz"/>
+   </widget>
+   <widget class="QMenu" name="menuTest2">
+    <property name="title">
+     <string>Test2</string>
+    </property>
+   </widget>
+   <addaction name="menuTest1"/>
+   <addaction name="menuTest2"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionHallo">
+   <property name="text">
+    <string>hallo</string>
+   </property>
+  </action>
+  <action name="actionDas">
+   <property name="text">
+    <string>das</string>
+   </property>
+  </action>
+  <action name="actionK_nnte">
+   <property name="text">
+    <string>cg projekt</string>
+   </property>
+  </action>
+  <action name="actionWird">
+   <property name="text">
+    <string>wird</string>
+   </property>
+  </action>
+  <action name="actionNe">
+   <property name="text">
+    <string>ne</string>
+   </property>
+  </action>
+  <action name="action1_0">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>1,0</string>
+   </property>
+  </action>
+  <action name="actionEz">
+   <property name="text">
+    <string>ez</string>
+   </property>
+  </action>
  </widget>
- <layoutDefault spacing="6" margin="11" />
- <pixmapfunction></pixmapfunction>
+ <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections/>
 </ui>
