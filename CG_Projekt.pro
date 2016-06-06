@@ -16,9 +16,9 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    myopenglwidget.cpp
+    qoglwidget.cpp
 
 HEADERS  += mainwindow.h \
-    myopenglwidget.h
+    qoglwidget.h
 
 FORMS    += mainwindow.ui
