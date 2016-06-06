@@ -17,121 +17,101 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QOpenGLWidget" name="openGLWidget">
-    <property name="geometry">
-     <rect>
-      <x>-1</x>
-      <y>-1</y>
-      <width>601</width>
-      <height>301</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QSlider" name="xRotSlider">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>310</y>
-      <width>581</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string>x Rotation Slider</string>
-    </property>
-    <property name="statusTip">
-     <string>X Rotation</string>
-    </property>
-    <property name="whatsThis">
-     <string>xSlider</string>
-    </property>
-    <property name="maximum">
-     <number>360</number>
-    </property>
-    <property name="singleStep">
-     <number>18</number>
-    </property>
-    <property name="pageStep">
-     <number>15</number>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-    <property name="tickPosition">
-     <enum>QSlider::TicksAbove</enum>
-    </property>
-    <property name="tickInterval">
-     <number>15</number>
-    </property>
-   </widget>
-   <widget class="QSlider" name="yRotSlider">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>340</y>
-      <width>581</width>
-      <height>19</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string>Y Rotation Slider</string>
-    </property>
-    <property name="statusTip">
-     <string>Y Rotation</string>
-    </property>
-    <property name="maximum">
-     <number>360</number>
-    </property>
-    <property name="singleStep">
-     <number>18</number>
-    </property>
-    <property name="pageStep">
-     <number>15</number>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-    <property name="tickPosition">
-     <enum>QSlider::TicksAbove</enum>
-    </property>
-    <property name="tickInterval">
-     <number>15</number>
-    </property>
-   </widget>
-   <widget class="QSlider" name="zRotSlider">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>370</y>
-      <width>581</width>
-      <height>19</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string>Z Rotation Slider</string>
-    </property>
-    <property name="statusTip">
-     <string>Z Rotation</string>
-    </property>
-    <property name="maximum">
-     <number>360</number>
-    </property>
-    <property name="singleStep">
-     <number>18</number>
-    </property>
-    <property name="pageStep">
-     <number>15</number>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-    <property name="tickPosition">
-     <enum>QSlider::TicksAbove</enum>
-    </property>
-    <property name="tickInterval">
-     <number>15</number>
-    </property>
-   </widget>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QOGLWidget" name="openGLWidget"/>
+    </item>
+    <item row="1" column="0">
+     <widget class="QSlider" name="xRotSlider">
+      <property name="toolTip">
+       <string>x Rotation Slider</string>
+      </property>
+      <property name="statusTip">
+       <string>X Rotation</string>
+      </property>
+      <property name="whatsThis">
+       <string>xSlider</string>
+      </property>
+      <property name="maximum">
+       <number>360</number>
+      </property>
+      <property name="singleStep">
+       <number>18</number>
+      </property>
+      <property name="pageStep">
+       <number>15</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="tickPosition">
+       <enum>QSlider::TicksAbove</enum>
+      </property>
+      <property name="tickInterval">
+       <number>15</number>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QSlider" name="yRotSlider">
+      <property name="toolTip">
+       <string>Y Rotation Slider</string>
+      </property>
+      <property name="statusTip">
+       <string>Y Rotation</string>
+      </property>
+      <property name="minimum">
+       <number>-180</number>
+      </property>
+      <property name="maximum">
+       <number>180</number>
+      </property>
+      <property name="singleStep">
+       <number>18</number>
+      </property>
+      <property name="pageStep">
+       <number>15</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="tickPosition">
+       <enum>QSlider::TicksAbove</enum>
+      </property>
+      <property name="tickInterval">
+       <number>15</number>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QSlider" name="zRotSlider">
+      <property name="toolTip">
+       <string>Z Rotation Slider</string>
+      </property>
+      <property name="statusTip">
+       <string>Z Rotation</string>
+      </property>
+      <property name="maximum">
+       <number>360</number>
+      </property>
+      <property name="singleStep">
+       <number>18</number>
+      </property>
+      <property name="pageStep">
+       <number>15</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="tickPosition">
+       <enum>QSlider::TicksAbove</enum>
+      </property>
+      <property name="tickInterval">
+       <number>15</number>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -204,6 +184,13 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>QOGLWidget</class>
+   <extends>QOpenGLWidget</extends>
+   <header>qoglwidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
