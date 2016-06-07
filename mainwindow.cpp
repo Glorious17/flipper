@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->zRotSlider, SIGNAL(valueChanged(int)), ui->openGLWidget, SLOT(setZRotation(int)));
 
     connect(ui->openGLWidget, SIGNAL(changeRotation(int, int, int)), this, SLOT(onChangeRotation(int, int, int)));
+    connect(ui->openGLWidget, SIGNAL(changeTranslation(float, float)), ui->openGLWidget, SLOT(onChangeTranslation(float, float)));
 }
 
 MainWindow::~MainWindow()
