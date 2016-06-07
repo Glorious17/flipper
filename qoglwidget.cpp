@@ -2,9 +2,12 @@
 
 QOGLWidget::QOGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 {
-    xRot = 0;
-    yRot = 0;
+    xRot = -25.0;
+    yRot = 25.0;
     zRot = 0;
+
+    xTran = 0;
+    yTran = 0;
 }
 
 QOGLWidget::~QOGLWidget()
@@ -17,7 +20,7 @@ void QOGLWidget::initializeGL()
 {
     initializeOpenGLFunctions();
 
-    glClearColor(0,1,1,1);
+    glClearColor(0,0,0,1);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHT0);
     glEnable(GL_LIGHTING);
@@ -41,20 +44,65 @@ void QOGLWidget::paintGL()
     glLoadIdentity();
 
     //rechts/links | oben/unten | vorne/hinten
-    glTranslatef(0.0, 0.0, 0.0);
+    glTranslatef(xTran, yTran, 0.0);
 
-
+    //rotate
     glRotatef(xRot, 1.0, 0.0, 0.0);
     glRotatef(yRot, 0.0, 1.0, 0.0);
     glRotatef(zRot, 0.0, 0.0, 1.0);
 
-    glBegin(GL_TRIANGLES);
-        glColor3f(1.0, 0.0, 0.0);
-        glVertex3f(-0.5, -0.5, 0);
-        glColor3f(0.0, 1.0, 0.0);
-        glVertex3f(0.5, -0.5, 0);
-        glColor3f(0.0, 0.0, 1.0);
-        glVertex3f(0.0, 0.5, 0);
+    drawQuad(0.0, 0.0, 0.0, 1.5, 0.5, 0.1);
+}
+
+void QOGLWidget::drawQuad(float mx, float my, float mz, float width, float height, float length)
+{
+    float hWidth = width/2.0;
+    float hHeight = height/2.0;
+    float hLength = length/2.0;
+
+    glColor3f(1.0, 0.0, 0.0);
+
+    glBegin(GL_QUADS);
+        glVertex3f(mx - hWidth, my - hHeight, mz - hLength);
+        glVertex3f(mx - hWidth, my + hHeight, mz - hLength);
+        glVertex3f(mx + hWidth, my + hHeight, mz - hLength);
+        glVertex3f(mx + hWidth, my - hHeight, mz - hLength);
+    glEnd();
+
+    glColor3f(0.0, 1.0, 0.0);
+
+    glBegin(GL_QUADS);
+        glVertex3f(mx + hWidth, my + hHeight, mz - hLength);
+        glVertex3f(mx + hWidth, my + hHeight, mz + hLength);
+        glVertex3f(mx + hWidth, my - hHeight, mz + hLength);
+        glVertex3f(mx + hWidth, my - hHeight, mz - hLength);
+    glEnd();
+
+    glColor3f(0.0, 0.0, 1.0);
+
+    glBegin(GL_QUADS);
+        glVertex3f(mx - hWidth, my - hHeight, mz + hLength);
+        glVertex3f(mx - hWidth, my + hHeight, mz + hLength);
+        glVertex3f(mx + hWidth, my + hHeight, mz + hLength);
+        glVertex3f(mx + hWidth, my - hHeight, mz + hLength);
+    glEnd();
+
+    glColor3f(1.0, 1.0, 1.0);
+
+    glBegin(GL_QUADS);
+        glVertex3f(mx - hWidth, my + hHeight, mz - hLength);
+        glVertex3f(mx - hWidth, my + hHeight, mz + hLength);
+        glVertex3f(mx - hWidth, my - hHeight, mz + hLength);
+        glVertex3f(mx - hWidth, my - hHeight, mz - hLength);
+    glEnd();
+
+    glColor3f(0.0, 1.0, 1.0);
+
+    glBegin(GL_QUADS);
+        glVertex3f(mx - hWidth, my + hHeight, mz - hLength);
+        glVertex3f(mx - hWidth, my + hHeight, mz + hLength);
+        glVertex3f(mx + hWidth, my + hHeight, mz + hLength);
+        glVertex3f(mx + hWidth, my + hHeight, mz - hLength);
     glEnd();
 }
 
@@ -68,7 +116,6 @@ void QOGLWidget::mouseMoveEvent(QMouseEvent *event)
     // ... and while moving, we calculate the dragging deltas
 
     // Left button: Rotating around y axis
-
     if(event->buttons() == Qt::LeftButton)
     {
         int dx = 0;
@@ -80,22 +127,29 @@ void QOGLWidget::mouseMoveEvent(QMouseEvent *event)
         emit changeRotation( dx, dy, dz );
     }
 
-    // Right button: Rotating around z and y axis
-    //int dy = (event->buttons() & Qt::LeftButton) ? lastpos.x() - event->x() : 0;
-
+    // Right button: Translating to left/right, up/down
     if(event->buttons() == Qt::RightButton)
     {
-        int dx = 0;
-        int dy = 0;
-        dx = lastpos.x() - event->x();
-        dy = lastpos.y() - event->y();
+        float dx = 0;
+        float dy = 0;
+        dx = ((lastpos.x() - event->x()) * 0.01);
+        dy = ((lastpos.y() - event->y()) * 0.01) * (-1);
 
-        // Now let the world know that we want to rotate
+        // Now let the world know that we want to translate
         emit changeTranslation( dx, dy );
     }
 
     // Make the current position the starting point for the next dragging step
     lastpos = event->pos();
+}
+
+void QOGLWidget::onChangeTranslation(float dx, float dy)
+{
+    // To apply the requested Translation deltas, we increment...
+    xTran = xTran + dx;
+    yTran = yTran + dy;
+
+    update();
 }
 
 void QOGLWidget::setXRotation(int angle)
