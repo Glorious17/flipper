@@ -31,8 +31,8 @@ void QOGLWidget::initializeGL()
     float lightPosition[] = { 0.0, 50.0, 50.0, 1.0 };*/
 
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_LIGHT0);
     glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
 
     /*
     // Properties of the objects' materials
@@ -77,7 +77,7 @@ void QOGLWidget::paintGL()
 
     glScalef(scale, scale, scale); // Scale along all axis
 
-    drawQuad(0.0, 0.0, 0.0, 1.5, 0.5, 0.25);
+    drawQuad(QVector3D(0.0, 0.0, 0.0), 1.5, 0.5, 0.25);
     glColor3f(1.0,0.5,1.0);
     drawSphere(QVector3D(0.0, 0.75, 0.0), 0.25);
 }
@@ -167,15 +167,23 @@ void QOGLWidget::onChangeZoom(float dzoom)
     update();
 }
 
-void QOGLWidget::drawQuad(float mx, float my, float mz, float width, float height, float length)
+void QOGLWidget::drawQuad(const QVector3D& pos, float width, float height, float length)
 {
     float hWidth = width/2.0;
     float hHeight = height/2.0;
     float hLength = length/2.0;
 
+    float mx = pos.x();
+    float my = pos.y();
+    float mz = pos.z();
+
     glColor3f(1.0, 0.0, 0.0);
 
     glBegin(GL_QUADS);
+
+        QVector3D cross = QVector3D::crossProduct(QVector3D(mx - hWidth, my - hHeight, mz - hLength), QVector3D(mx - hWidth, my + hHeight, mz - hLength));
+
+        glNormal3f(cross.x(), cross.y(), cross.z());
         glVertex3f(mx - hWidth, my - hHeight, mz - hLength);
         glVertex3f(mx - hWidth, my + hHeight, mz - hLength);
         glVertex3f(mx + hWidth, my + hHeight, mz - hLength);

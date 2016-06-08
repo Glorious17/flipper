@@ -24,7 +24,7 @@ private:
     float yTran;
     float scale;
 
-    void drawQuad(float mx, float my, float mz, float width, float height, float length);
+    void drawQuad(const QVector3D &pos, float width, float height, float length);
     void drawSphere(const QVector3D &pos, float rad = 1.f, int nr_lat = 90, int nr_lon = 90 );
 
 protected:
