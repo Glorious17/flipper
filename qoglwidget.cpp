@@ -21,8 +21,8 @@ void QOGLWidget::initializeGL()
     initializeOpenGLFunctions();
 
     glClearColor(0,0,0,1);
-    //glEnable(GL_BLEND);
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     /*float ambientLight[] = { 0.2, 0.2, 0.2, 1.0 };
     float specularLight[] = { 1.0, 1.0, 1.0, 1.0 };
@@ -45,6 +45,9 @@ void QOGLWidget::initializeGL()
     glDepthFunc(GL_LESS);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
+    glEnable(GL_NORMALIZE);
+    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+    glEnable(GL_COLOR_MATERIAL);
 
     /*// Properties of the objects' materials
     glMaterialfv(GL_FRONT, GL_SPECULAR, specularity); // Reflectance
@@ -55,9 +58,6 @@ void QOGLWidget::initializeGL()
 
     glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
     glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);*/
-
-    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-    glEnable(GL_COLOR_MATERIAL);
 }
 
 void QOGLWidget::resizeGL(int w, int h)
@@ -76,7 +76,8 @@ void QOGLWidget::paintGL()
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    glOrtho(-2, 2, -2, 2, -2, 2);
+    glOrtho(-5, 5, -5, 5, -5, 5);
+    //glFrustum(-10, 10, -10, 10, -10, 10);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -86,9 +87,19 @@ void QOGLWidget::paintGL()
     glRotatef(yRot, 0.0, 1.0, 0.0);
     glRotatef(zRot, 0.0, 0.0, 1.0);
 
-    drawQuad(QVector3D(0.0, 0.0, 0.0), 10, 0.01, 0.01);
-    drawQuad(QVector3D(0.0, 0.0, 0.0), 0.01, 10, 0.01);
-    drawQuad(QVector3D(0.0, 0.0, 0.0), 0.01, 0.01, 10);
+    drawQuad(QVector3D(0.0, 0.0, 0.0), 50, 0.05, 0.05); //X ACHSE
+    drawQuad(QVector3D(0.0, 0.0, 0.0), 0.05, 50, 0.05); //Y ACHSE
+    drawQuad(QVector3D(0.0, 0.0, 0.0), 0.05, 0.05, 50); //Z ACHSE
+
+    //PLANE
+    glColor4f(1, 1, 1, 0.3);
+    glBegin(GL_QUADS);
+    glVertex3f(-50, -2, -50);
+    glVertex3f(50, -2, -50);
+    glVertex3f(50, -2, 50);
+    glVertex3f(-50, -2, 50);
+    glEnd();
+
     //rechts/links | oben/unten | vorne/hinten
     glTranslatef(xTran, yTran, 0.0);
 
@@ -96,17 +107,21 @@ void QOGLWidget::paintGL()
     glScalef(scale, scale, scale); // Scale along all axis
 
     //light position
-    //float lightPosition1[] = { 0.0, 2.0, 0.0, 1.0 };
-    //glLightfv(GL_LIGHT1, GL_POSITION, lightPosition1);
+    float lightPosition1[] = { 0.0, 2.0, 4.0, 1.0 };
+    glLightfv(GL_LIGHT1, GL_POSITION, lightPosition1);
 
     glPushMatrix();
 
     //draw everything
 
     QString text1 = "Setzen Sie eine Wand";
-    drawQuad(QVector3D(0.0, 0.0, -1.0), 1.5, 0.5, 0.25);
+    drawQuad(QVector3D(-5.0, 0.0, 0.0), 2.0, 0.4, 0.3);
+    drawQuad(QVector3D(-2.5, 0.0, 0.0), 2.0, 0.4, 0.3);
+    drawQuad(QVector3D(0.0, 0.0, 0.0), 2.0, 0.4, 0.3);
+    drawQuad(QVector3D(2.5, 0.0, 0.0), 2.0, 0.4, 0.3);
+    drawQuad(QVector3D(5.0, 0.0, 0.0), 2.0, 0.4, 0.3);
     glColor3f(1.0,1.0,1.0);
-    drawSphere(QVector3D(0.0, -0.5, 0.5), 0.25);
+    drawSphere(QVector3D(0.0, 0.35, 0.0), 0.15);
 
     glPopMatrix();
 }
