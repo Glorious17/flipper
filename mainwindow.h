@@ -16,7 +16,7 @@ public:
     ~MainWindow();
 
 private slots:
-    void onChangeRotation( int dx, int dy, int dz );
+    //void onChangeRotation( int dx, int dy, int dz );
 
 private:
     Ui::MainWindow *ui;
