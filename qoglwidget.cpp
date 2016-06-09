@@ -2,8 +2,8 @@
 
 QOGLWidget::QOGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 {
-    xRot = -25.0;
-    yRot = 25.0;
+    xRot = 25.0;
+    yRot = 0.0; //-25
     zRot = 0;
 
     xTran = 0;
@@ -14,28 +14,39 @@ QOGLWidget::QOGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 
 QOGLWidget::~QOGLWidget()
 {
-
 }
-
 
 void QOGLWidget::initializeGL()
 {
     initializeOpenGLFunctions();
 
     glClearColor(0,0,0,1);
+    //glEnable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     /*float ambientLight[] = { 0.2, 0.2, 0.2, 1.0 };
     float specularLight[] = { 1.0, 1.0, 1.0, 1.0 };
     float specularity[] = { 1.0, 1.0, 1.0, 1.0 };
-    float shininess[] = { 60.0 };
-    float lightPosition[] = { 0.0, 50.0, 50.0, 1.0 };*/
+    float shininess[] = { 60.0 };*/
 
+    //LIGHT 0
+    float light_ambient0[] = { 0.2f, 0.2f, 0.2f, 1.f };
+    glLightfv(GL_LIGHT0, GL_AMBIENT,  light_ambient0);
+    //glEnable(GL_LIGHT0);
+
+    //LIGHT 1
+    float light_position1[] = {0.0f, 2.0f, 4.0f, 1.f };
+    glLightfv(GL_LIGHT1, GL_POSITION,  light_position1);
+    float light_diffuse1[] = {0.8f, 0.8f, 0.8f, 1.f };
+    glLightfv(GL_LIGHT1, GL_DIFFUSE,  light_diffuse1 );
+    glEnable(GL_LIGHT1);
+
+    glShadeModel(GL_SMOOTH);
+    glDepthFunc(GL_LESS);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
 
-    /*
-    // Properties of the objects' materials
+    /*// Properties of the objects' materials
     glMaterialfv(GL_FRONT, GL_SPECULAR, specularity); // Reflectance
     glMaterialfv(GL_FRONT, GL_SHININESS, shininess); // Shininess
 
@@ -43,10 +54,7 @@ void QOGLWidget::initializeGL()
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLight);
 
     glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
-
-    // Position of the light source
-    glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);*/
+    glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);*/
 
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
@@ -64,22 +72,43 @@ void QOGLWidget::resizeGL(int w, int h)
 void QOGLWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    //glMatrixMode(GL_MODELVIEW);
+
+    glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    //rechts/links | oben/unten | vorne/hinten
-    glTranslatef(xTran, yTran, 0.0);
+    glOrtho(-2, 2, -2, 2, -2, 2);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 
     //rotate
     glRotatef(xRot, 1.0, 0.0, 0.0);
     glRotatef(yRot, 0.0, 1.0, 0.0);
     glRotatef(zRot, 0.0, 0.0, 1.0);
 
+    drawQuad(QVector3D(0.0, 0.0, 0.0), 10, 0.01, 0.01);
+    drawQuad(QVector3D(0.0, 0.0, 0.0), 0.01, 10, 0.01);
+    drawQuad(QVector3D(0.0, 0.0, 0.0), 0.01, 0.01, 10);
+    //rechts/links | oben/unten | vorne/hinten
+    glTranslatef(xTran, yTran, 0.0);
+
+    //scale view
     glScalef(scale, scale, scale); // Scale along all axis
 
-    drawQuad(QVector3D(0.0, 0.0, 0.0), 1.5, 0.5, 0.25);
-    glColor3f(1.0,0.5,1.0);
-    drawSphere(QVector3D(0.0, 0.75, 0.0), 0.25);
+    //light position
+    //float lightPosition1[] = { 0.0, 2.0, 0.0, 1.0 };
+    //glLightfv(GL_LIGHT1, GL_POSITION, lightPosition1);
+
+    glPushMatrix();
+
+    //draw everything
+
+    QString text1 = "Setzen Sie eine Wand";
+    drawQuad(QVector3D(0.0, 0.0, -1.0), 1.5, 0.5, 0.25);
+    glColor3f(1.0,1.0,1.0);
+    drawSphere(QVector3D(0.0, -0.5, 0.5), 0.25);
+
+    glPopMatrix();
 }
 
 void QOGLWidget::mousePressEvent(QMouseEvent *event)
@@ -134,27 +163,6 @@ void QOGLWidget::onChangeTranslation(float dx, float dy)
     update();
 }
 
-void QOGLWidget::setXRotation(int angle)
-{
-    xRot = angle;
-    emit xRotationChanged(angle);
-    update();
-}
-
-void QOGLWidget::setYRotation(int angle)
-{
-    yRot = angle;
-    emit yRotationChanged(angle);
-    update();
-}
-
-void QOGLWidget::setZRotation(int angle)
-{
-    zRot = angle;
-    emit zRotationChanged(angle);
-    update();
-}
-
 void QOGLWidget::onChangeZoom(float dzoom)
 {
     scale = scale + dzoom;
@@ -167,59 +175,63 @@ void QOGLWidget::onChangeZoom(float dzoom)
     update();
 }
 
-void QOGLWidget::drawQuad(const QVector3D& pos, float width, float height, float length)
+void QOGLWidget::onChangeRotation(int dx, int dy, int dz)
 {
-    float hWidth = width/2.0;
-    float hHeight = height/2.0;
-    float hLength = length/2.0;
+    // To apply the requested rotation deltas, we increment...
+    xRot = xRot + dx;
+    yRot = yRot + dy;
+    zRot = zRot + dz;
+    update();
+}
 
-    float mx = pos.x();
-    float my = pos.y();
-    float mz = pos.z();
+void QOGLWidget::drawQuad(QVector3D pos, float width, float height, float length)
+{
+    // punkt rechts unten vorne
+    float x = pos.x() + (width/2.0);
+    float y = pos.y() - (height/2.0);
+    float z = pos.z() + (length/2.0);
 
-    glColor3f(1.0, 0.0, 0.0);
+    float faces[6][4][3] = {
+        {{x, y, z}, {x, y+height, z}, {x-width, y+height, z}, {x-width, y, z}}, //FRONT
+        //{{x, y, z-length}, {x-width, y, z-length}, {x-width, y+height, z-length}, {x, y+height, z-length}}, //BACK
+        {{x, y, z-length}, {x, y+height, z-length}, {x-width, y+height, z-length}, {x-width, y, z-length}}, //BACK2
+        {{x, y, z}, {x, y, z-length}, {x, y+height, z-length}, {x, y+height, z}}, // RIGHT
+        {{x-width, y, z}, {x-width, y+height, z}, {x-width, y+height, z-length}, {x-width, y, z-length}}, // LEFT
+        {{x, y+height, z}, {x, y+height, z-length}, {x-width, y+height, z-length}, {x-width, y+height, z}}, //TOP
+        {{x, y, z}, {x, y, z-length}, {x-width, y, z-length}, {x-width, y, z}} // BOTTOM
+    };
+
+    float colors[6][3] = {
+        {0.6, 0.6, 0.6}, //FRONT
+        {1.0, 0.0, 0.0}, //BACK
+        {0.0, 0.0, 1.0}, //RIGHT
+        {0.0, 1.0, 0.0}, //LEFT
+        {0.0, 1.0, 1.0}, //TOP
+        {1.0, 1.0, 1.0} //BOTTOM
+    };
+
+    float normals[6][3] = {
+        {0.0, 0.0, 1.0}, //FRONT
+        {0.0, 0.0, -1.0}, //BACK
+        {1.0, 0.0, 0.0}, //RIGHT
+        {-1.0, 0.0, 0.0}, //LEFT
+        {0.0, 1.0, 0.0}, //TOP
+        {0.0, -1.0, 0.0} //BOTTOM
+    };
 
     glBegin(GL_QUADS);
-
-        QVector3D cross = QVector3D::crossProduct(QVector3D(mx - hWidth, my - hHeight, mz - hLength), QVector3D(mx - hWidth, my + hHeight, mz - hLength));
-
-        glNormal3f(cross.x(), cross.y(), cross.z());
-        glVertex3f(mx - hWidth, my - hHeight, mz - hLength);
-        glVertex3f(mx - hWidth, my + hHeight, mz - hLength);
-        glVertex3f(mx + hWidth, my + hHeight, mz - hLength);
-        glVertex3f(mx + hWidth, my - hHeight, mz - hLength);
-
-        glColor3f(0.0, 1.0, 0.0);
-
-        glVertex3f(mx + hWidth, my + hHeight, mz - hLength);
-        glVertex3f(mx + hWidth, my + hHeight, mz + hLength);
-        glVertex3f(mx + hWidth, my - hHeight, mz + hLength);
-        glVertex3f(mx + hWidth, my - hHeight, mz - hLength);
-
-        glColor3f(0.0, 0.0, 1.0);
-
-        glVertex3f(mx - hWidth, my - hHeight, mz + hLength);
-        glVertex3f(mx - hWidth, my + hHeight, mz + hLength);
-        glVertex3f(mx + hWidth, my + hHeight, mz + hLength);
-        glVertex3f(mx + hWidth, my - hHeight, mz + hLength);
-
-        glColor3f(1.0, 1.0, 1.0);
-
-        glVertex3f(mx - hWidth, my + hHeight, mz - hLength);
-        glVertex3f(mx - hWidth, my + hHeight, mz + hLength);
-        glVertex3f(mx - hWidth, my - hHeight, mz + hLength);
-        glVertex3f(mx - hWidth, my - hHeight, mz - hLength);
-
-        glColor3f(0.0, 1.0, 1.0);
-
-        glVertex3f(mx - hWidth, my + hHeight, mz - hLength);
-        glVertex3f(mx - hWidth, my + hHeight, mz + hLength);
-        glVertex3f(mx + hWidth, my + hHeight, mz + hLength);
-        glVertex3f(mx + hWidth, my + hHeight, mz - hLength);
+        for(int i = 0; i < 6; i++){
+            glColor3f(colors[i][0], colors[i][1], colors[i][2]);
+            glNormal3f(normals[i][0], normals[i][1], normals[i][2]);
+            glVertex3f(faces[i][0][0], faces[i][0][1], faces[i][0][2]);
+            glVertex3f(faces[i][1][0], faces[i][1][1], faces[i][1][2]);
+            glVertex3f(faces[i][2][0], faces[i][2][1], faces[i][2][2]);
+            glVertex3f(faces[i][3][0], faces[i][3][1], faces[i][3][2]);
+        }
     glEnd();
 }
 
-void QOGLWidget::drawSphere( const QVector3D& pos, float rad,
+void QOGLWidget::drawSphere(QVector3D pos, float rad,
                             int nr_lat, int nr_lon )
 {
     // Angle delta in both directions

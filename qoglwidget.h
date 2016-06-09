@@ -24,8 +24,8 @@ private:
     float yTran;
     float scale;
 
-    void drawQuad(const QVector3D &pos, float width, float height, float length);
-    void drawSphere(const QVector3D &pos, float rad = 1.f, int nr_lat = 90, int nr_lon = 90 );
+    void drawQuad(QVector3D pos, float width, float height, float length);
+    void drawSphere(QVector3D pos, float rad = 1.f, int nr_lat = 90, int nr_lon = 90 );
 
 protected:
     void initializeGL();
@@ -36,10 +36,8 @@ protected:
     void wheelEvent(QWheelEvent *event);
 
 public slots:
-    void setXRotation(int angle);
-    void setYRotation(int angle);
-    void setZRotation(int angle);
     void onChangeZoom(float dzoom);
+    void onChangeRotation(int dx, int dy, int dz);
     void onChangeTranslation(float dx, float dy);
 
 signals:
