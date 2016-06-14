@@ -16,9 +16,13 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    qoglwidget.cpp
+    qoglwidget.cpp \
+    cube.cpp \
+    cylinder.cpp
 
 HEADERS  += mainwindow.h \
-    qoglwidget.h
+    qoglwidget.h \
+    cube.h \
+    cylinder.h
 
 FORMS    += mainwindow.ui
