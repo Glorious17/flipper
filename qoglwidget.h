@@ -6,6 +6,8 @@
 #include <QMouseEvent>
 #include <QVector3D>
 #include <QWheelEvent>
+#include "cube.h"
+#include "cylinder.h"
 
 class QOGLWidget : public QOpenGLWidget, protected QOpenGLFunctions
 {
@@ -23,8 +25,8 @@ private:
     float xTran;
     float yTran;
     float scale;
-
-    void drawQuad(QVector3D pos, float width, float height, float length);
+    Cube cube1 = Cube(QVector3D(0.0, 0.0, 0.0), 1.0, 0.5, 2.0);
+    Cylinder cylinder1 = Cylinder(QVector3D(0.0, 0.0, 0.0), 2, 4);
     void drawSphere(QVector3D pos, float rad = 1.f, int nr_lat = 90, int nr_lon = 90 );
 
 protected:

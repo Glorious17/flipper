@@ -87,9 +87,9 @@ void QOGLWidget::paintGL()
     glRotatef(yRot, 0.0, 1.0, 0.0);
     glRotatef(zRot, 0.0, 0.0, 1.0);
 
-    drawQuad(QVector3D(0.0, 0.0, 0.0), 50, 0.05, 0.05); //X ACHSE
-    drawQuad(QVector3D(0.0, 0.0, 0.0), 0.05, 50, 0.05); //Y ACHSE
-    drawQuad(QVector3D(0.0, 0.0, 0.0), 0.05, 0.05, 50); //Z ACHSE
+    //drawQuad(QVector3D(0.0, 0.0, 0.0), 50, 0.05, 0.05); //X ACHSE
+    //drawQuad(QVector3D(0.0, 0.0, 0.0), 0.05, 50, 0.05); //Y ACHSE
+    //drawQuad(QVector3D(0.0, 0.0, 0.0), 0.05, 0.05, 50); //Z ACHSE
 
     //PLANE
     glColor4f(1, 1, 1, 0.3);
@@ -110,16 +110,15 @@ void QOGLWidget::paintGL()
     float lightPosition1[] = { 0.0, 2.0, 4.0, 1.0 };
     glLightfv(GL_LIGHT1, GL_POSITION, lightPosition1);
 
+    //draw everything
     glPushMatrix();
 
-    //draw everything
+    cube1.setColor(0.0, 1.0, 0.1);
+    cube1.setPos(QVector3D(0.0, 1.0, 3.0));
+    cube1.draw();
 
-    QString text1 = "Setzen Sie eine Wand";
-    drawQuad(QVector3D(-5.0, 0.0, 0.0), 2.0, 0.4, 0.3);
-    drawQuad(QVector3D(-2.5, 0.0, 0.0), 2.0, 0.4, 0.3);
-    drawQuad(QVector3D(0.0, 0.0, 0.0), 2.0, 0.4, 0.3);
-    drawQuad(QVector3D(2.5, 0.0, 0.0), 2.0, 0.4, 0.3);
-    drawQuad(QVector3D(5.0, 0.0, 0.0), 2.0, 0.4, 0.3);
+    cylinder1.draw();
+
     glColor3f(1.0,1.0,1.0);
     drawSphere(QVector3D(0.0, 0.35, 0.0), 0.15);
 
@@ -197,53 +196,6 @@ void QOGLWidget::onChangeRotation(int dx, int dy, int dz)
     yRot = yRot + dy;
     zRot = zRot + dz;
     update();
-}
-
-void QOGLWidget::drawQuad(QVector3D pos, float width, float height, float length)
-{
-    // punkt rechts unten vorne
-    float x = pos.x() + (width/2.0);
-    float y = pos.y() - (height/2.0);
-    float z = pos.z() + (length/2.0);
-
-    float faces[6][4][3] = {
-        {{x, y, z}, {x, y+height, z}, {x-width, y+height, z}, {x-width, y, z}}, //FRONT
-        //{{x, y, z-length}, {x-width, y, z-length}, {x-width, y+height, z-length}, {x, y+height, z-length}}, //BACK
-        {{x, y, z-length}, {x, y+height, z-length}, {x-width, y+height, z-length}, {x-width, y, z-length}}, //BACK2
-        {{x, y, z}, {x, y, z-length}, {x, y+height, z-length}, {x, y+height, z}}, // RIGHT
-        {{x-width, y, z}, {x-width, y+height, z}, {x-width, y+height, z-length}, {x-width, y, z-length}}, // LEFT
-        {{x, y+height, z}, {x, y+height, z-length}, {x-width, y+height, z-length}, {x-width, y+height, z}}, //TOP
-        {{x, y, z}, {x, y, z-length}, {x-width, y, z-length}, {x-width, y, z}} // BOTTOM
-    };
-
-    float colors[6][3] = {
-        {0.6, 0.6, 0.6}, //FRONT
-        {1.0, 0.0, 0.0}, //BACK
-        {0.0, 0.0, 1.0}, //RIGHT
-        {0.0, 1.0, 0.0}, //LEFT
-        {0.0, 1.0, 1.0}, //TOP
-        {1.0, 1.0, 1.0} //BOTTOM
-    };
-
-    float normals[6][3] = {
-        {0.0, 0.0, 1.0}, //FRONT
-        {0.0, 0.0, -1.0}, //BACK
-        {1.0, 0.0, 0.0}, //RIGHT
-        {-1.0, 0.0, 0.0}, //LEFT
-        {0.0, 1.0, 0.0}, //TOP
-        {0.0, -1.0, 0.0} //BOTTOM
-    };
-
-    glBegin(GL_QUADS);
-        for(int i = 0; i < 6; i++){
-            glColor3f(colors[i][0], colors[i][1], colors[i][2]);
-            glNormal3f(normals[i][0], normals[i][1], normals[i][2]);
-            glVertex3f(faces[i][0][0], faces[i][0][1], faces[i][0][2]);
-            glVertex3f(faces[i][1][0], faces[i][1][1], faces[i][1][2]);
-            glVertex3f(faces[i][2][0], faces[i][2][1], faces[i][2][2]);
-            glVertex3f(faces[i][3][0], faces[i][3][1], faces[i][3][2]);
-        }
-    glEnd();
 }
 
 void QOGLWidget::drawSphere(QVector3D pos, float rad,
