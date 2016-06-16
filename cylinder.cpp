@@ -1,13 +1,11 @@
 #include "cylinder.h"
+#include <cmath>
 
 Cylinder::Cylinder(QVector3D pos, float radius, float height)
 {
     this->pos = pos;
     this->radius = radius;
     this->height = height;
-
-
-    strips = 45;
 
     red = 1.0;
     green = 1.0;
@@ -19,7 +17,10 @@ Cylinder::~Cylinder(){
 
 void Cylinder::draw(){
 
-    float step = (2.0f * M_PI)/strips;
+    int strips = 45; //wie viele "ecken" soll der zylinder haben
+
+    float delta = (2.0f * M_PI)/strips;
+    float step;
     float x;
     float y;
     float z;
@@ -29,10 +30,11 @@ void Cylinder::draw(){
     //Clyinder Top
     glBegin(GL_POLYGON);
     glNormal3f(0.0, 1.0, 0.0);
-    for(float i = 0; i <= 2.0f*M_PI; i += step){
-        x = pos.x() + radius * cosf(i);
+    for(int i = 0; i < strips; i++){
+        step = i*delta;
+        x = pos.x() + radius * cosf(step);
         y = pos.y() + (height/2.0);
-        z = pos.z() + radius * sinf(i);
+        z = pos.z() + radius * sinf(step);
         glVertex3f(x, y, z);
     }
     glEnd();
@@ -40,10 +42,11 @@ void Cylinder::draw(){
     //Cylinder Bottom
     glBegin(GL_POLYGON);
     glNormal3f(0.0, -1.0, 0.0);
-    for(float i = 0; i <= 2.0f*M_PI; i += step){
-        x = pos.x() + radius * cosf(i);
+    for(int i = 0; i < strips; i++){
+        step = i*delta;
+        x = pos.x() + radius * cosf(step);
         y = pos.y() - (height/2.0);
-        z = pos.z() + radius * sinf(i);
+        z = pos.z() + radius * sinf(step);
         glVertex3f(x, y, z);
     }
     glEnd();
@@ -52,13 +55,12 @@ void Cylinder::draw(){
     float zn;
     //Cylinder Sides
     glBegin(GL_QUAD_STRIP);
-    for(float i = 0; i <= (2.0f*M_PI); i += step){
+    for(int i = 0; i <= strips; i++){
 
-        qDebug("i: %f | 2.0f*M_PI: %f", i, (2.0f*M_PI));
+        step = i*delta;
 
-
-        xn = cosf(i);
-        zn = sinf(i);
+        xn = cosf(step);
+        zn = sinf(step);
 
         x = pos.x() + radius * xn;
         z = pos.z() + radius * zn;
@@ -70,6 +72,8 @@ void Cylinder::draw(){
     }
     glEnd();
 }
+
+//Setter---------------------------------------------------
 
 void Cylinder::setColor(float red, float green, float blue){
     this->red = red;
@@ -88,3 +92,25 @@ void Cylinder::setHeight(float height){
 void Cylinder::setRadius(float radius){
     this->radius = radius;
 }
+
+//Getter---------------------------------------------------
+
+QVector3D Cylinder::getPos(){
+    return pos;
+}
+
+float Cylinder::getHeight(){
+    return height;
+}
+
+float Cylinder::getRadius(){
+    return radius;
+}
+
+
+
+
+
+
+
+

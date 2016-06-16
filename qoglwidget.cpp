@@ -1,4 +1,5 @@
 #include "qoglwidget.h"
+#include <cmath>
 
 QOGLWidget::QOGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 {
@@ -10,54 +11,115 @@ QOGLWidget::QOGLWidget(QWidget *parent) : QOpenGLWidget(parent)
     yTran = 0;
 
     scale = 1.0;
+
+    timer_game = new QTimer(this);
+    timer_game->start(17);
+
+    // Everytime the timer fires, the animation is going one step forward
+    connect(timer_game, SIGNAL(timeout()), this, SLOT(gameUpdate()));
 }
 
 QOGLWidget::~QOGLWidget()
 {
 }
 
+void QOGLWidget::gameUpdate(){
+    if(cylinder1.getPos().x() < 4.00){
+        cylinder1.setPos(QVector3D(cylinder1.getPos().x()+0.05, 1.0, 0.0));
+    }
+    update();
+}
+
+void QOGLWidget::paintGL()
+{
+    //Szene wird resetet
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Aus dem zwischenspeicher wird alles gelöscht
+    glMatrixMode(GL_PROJECTION);                        //Wechselt in den Projection Matrix Mode
+    glLoadIdentity();                                   //Projection Matrix wird gecleared
+    glOrtho(-5, 5, -5, 5, -20, 20);                     //Die ränder von allem was man sehen kann wird gesetzt
+    glMatrixMode(GL_MODELVIEW);                         //Wechselt in den Modelview um objekte zu rendern
+    glLoadIdentity();                                   //Modelview wird erst gecleared
+
+    //Rotiert die Komplette Ansicht
+    glRotatef(xRot, 1.0, 0.0, 0.0);
+    glRotatef(yRot, 0.0, 1.0, 0.0);
+    glRotatef(zRot, 0.0, 0.0, 1.0);
+
+    //Die Komplette Ansicht wird verschoben
+    glTranslatef(xTran, yTran, 0.0);
+
+    //Die Ansicht wird an allen Achsen gleichgroß skaliert
+    glScalef(scale, scale, scale);
+
+    //DRAW EVERYTHING----------------------------
+    glPushMatrix();
+
+    //Ein Bunter Boden wird erstellt
+    glBegin(GL_POLYGON);
+    glNormal3f(0.0, 1.0, 0.0);
+    for(int i = 0; i < 45; i++){
+        float delta = (2.0f * M_PI) / 45;
+        float step = i*delta;
+        float x = 15 * cosf(step);
+        float y = 0.0;
+        float z = 15 * sinf(step);
+        glColor3f(1.0/i, (1.0/45.0) * i, 0.5);
+        glVertex3f(x, y, z);
+    }
+    glEnd();
+
+    cube1.setColor(0.0, 1.0, 0.0);
+    cube1.setPos(QVector3D(0.0, 1.0, 5.0));
+    cube1.draw();
+
+    cylinder1.setColor(0.0, 0.0, 1.0);
+    cylinder1.setRadius(0.5);
+    cylinder1.draw();
+
+    sphere1.setPos(QVector3D(0.0, 1.0, 0.0));
+    sphere1.setRadius(2.0);
+    sphere1.draw();
+
+    glPopMatrix();
+    //----------------------------DRAW EVERYTHING
+}
+
 void QOGLWidget::initializeGL()
 {
+    //OpenGL Funktionen werden geladen und initialisiert
     initializeOpenGLFunctions();
 
+    //Hintergrundfarbe wird gesetzt
     glClearColor(0,0,0,1);
+
+    //Damit Transparenz gerendert werden kann
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    /*float ambientLight[] = { 0.2, 0.2, 0.2, 1.0 };
-    float specularLight[] = { 1.0, 1.0, 1.0, 1.0 };
-    float specularity[] = { 1.0, 1.0, 1.0, 1.0 };
-    float shininess[] = { 60.0 };*/
-
-    //LIGHT 0
-    float light_ambient0[] = { 0.2f, 0.2f, 0.2f, 1.f };
-    glLightfv(GL_LIGHT0, GL_AMBIENT,  light_ambient0);
+    //LIGHT 0----------------------------------------------
+    //float light_ambient[] = { 0.2f, 0.2f, 0.2f, 0.2f };
+    //glLightfv(GL_LIGHT0, GL_AMBIENT,  light_ambient);
     //glEnable(GL_LIGHT0);
+    //----------------------------------------------LIGHT 0
 
-    //LIGHT 1
-    float light_position1[] = {0.0f, 2.0f, 4.0f, 1.f };
-    glLightfv(GL_LIGHT1, GL_POSITION,  light_position1);
+    //LIGHT 1----------------------------------------------
+    //Die Position des Lichts wird gesetzt
+    float lightPosition1[] = { 0.0, 3.0, 5.0, 1.0 };
+    glLightfv(GL_LIGHT1, GL_POSITION, lightPosition1);
+
     float light_diffuse1[] = {0.8f, 0.8f, 0.8f, 1.f };
     glLightfv(GL_LIGHT1, GL_DIFFUSE,  light_diffuse1 );
     glEnable(GL_LIGHT1);
+    //----------------------------------------------LIGHT 1
 
-    glShadeModel(GL_SMOOTH);
-    glDepthFunc(GL_LESS);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_NORMALIZE);
-    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-    glEnable(GL_COLOR_MATERIAL);
+    glShadeModel(GL_SMOOTH);    //Die belichtung von runden Objekten wird weich
+    glEnable(GL_DEPTH_TEST);    //Tiefentest wird aktiviert
+    glDepthFunc(GL_LESS);       //Objekte die hinter einem anderen Objekt stehen sollen nicht angezeigt werden
+    glEnable(GL_LIGHTING);      //Licht wird aktiviert
+    glEnable(GL_NORMALIZE);     //Normalvektoren werden mitskaliert wenn die szene verändert wird, damit der Normalvektor immer 1 lang ist (dient der belichtung)
 
-    /*// Properties of the objects' materials
-    glMaterialfv(GL_FRONT, GL_SPECULAR, specularity); // Reflectance
-    glMaterialfv(GL_FRONT, GL_SHININESS, shininess); // Shininess
-
-    // Enable ambient light usage
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLight);
-
-    glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);*/
+    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE); //Das Farbmaterial an den Objekten wird gesetzt
+    glEnable(GL_COLOR_MATERIAL);                                //Das Farbmaterial wird aktiviert
 }
 
 void QOGLWidget::resizeGL(int w, int h)
@@ -67,62 +129,6 @@ void QOGLWidget::resizeGL(int w, int h)
     glLoadIdentity();
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-}
-
-void QOGLWidget::paintGL()
-{
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-
-    glOrtho(-5, 5, -5, 5, -5, 5);
-    //glFrustum(-10, 10, -10, 10, -10, 10);
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    //rotate
-    glRotatef(xRot, 1.0, 0.0, 0.0);
-    glRotatef(yRot, 0.0, 1.0, 0.0);
-    glRotatef(zRot, 0.0, 0.0, 1.0);
-
-    //drawQuad(QVector3D(0.0, 0.0, 0.0), 50, 0.05, 0.05); //X ACHSE
-    //drawQuad(QVector3D(0.0, 0.0, 0.0), 0.05, 50, 0.05); //Y ACHSE
-    //drawQuad(QVector3D(0.0, 0.0, 0.0), 0.05, 0.05, 50); //Z ACHSE
-
-    //PLANE
-    glColor4f(1, 1, 1, 0.3);
-    glBegin(GL_QUADS);
-    glVertex3f(-50, -2, -50);
-    glVertex3f(50, -2, -50);
-    glVertex3f(50, -2, 50);
-    glVertex3f(-50, -2, 50);
-    glEnd();
-
-    //rechts/links | oben/unten | vorne/hinten
-    glTranslatef(xTran, yTran, 0.0);
-
-    //scale view
-    glScalef(scale, scale, scale); // Scale along all axis
-
-    //light position
-    float lightPosition1[] = { 0.0, 2.0, 4.0, 1.0 };
-    glLightfv(GL_LIGHT1, GL_POSITION, lightPosition1);
-
-    //draw everything
-    glPushMatrix();
-
-    cube1.setColor(0.0, 1.0, 0.1);
-    cube1.setPos(QVector3D(0.0, 1.0, 3.0));
-    cube1.draw();
-
-    cylinder1.draw();
-
-    glColor3f(1.0,1.0,1.0);
-    drawSphere(QVector3D(0.0, 0.35, 0.0), 0.15);
-
-    glPopMatrix();
 }
 
 void QOGLWidget::mousePressEvent(QMouseEvent *event)
@@ -193,43 +199,17 @@ void QOGLWidget::onChangeRotation(int dx, int dy, int dz)
 {
     // To apply the requested rotation deltas, we increment...
     xRot = xRot + dx;
-    yRot = yRot + dy;
+    if(yRot+dy < -180.0){
+        yRot = -180.0;
+    }
+    if(yRot+dy > 180.0){
+        yRot = 180.0;
+    }
+    if(yRot+dy > -180.0 && yRot+dy < 180.0){
+        yRot = yRot + dy;
+    }
     zRot = zRot + dz;
     update();
-}
-
-void QOGLWidget::drawSphere(QVector3D pos, float rad,
-                            int nr_lat, int nr_lon )
-{
-    // Angle delta in both directions
-    const float lat_delta = M_PI / float( nr_lat );
-    const float lon_delta = M_PI / float( nr_lon );
-
-    // Create horizontal stripes of squares
-    for( float lon = 0.0f; lon < 1.0f*M_PI; lon += lon_delta )
-    {
-        glBegin( GL_QUAD_STRIP ) ;
-        for( float lat = 0.0f; lat <= 2.0f*M_PI; lat += lat_delta )
-        {
-            // Each iteration adds another square, the other vertices
-            // are taken from the existing stripe
-            float xn1 = cosf( lat ) * sinf( lon );
-            float yn1 = sinf( lat ) * sinf( lon );
-            float zn1 = cosf( lon );
-
-            // Set normal vector (important for lighting!)
-            glNormal3f( xn1, yn1, zn1 );
-            glVertex3f( pos.x()+rad*xn1, pos.y()+rad*yn1, pos.z()+rad*zn1 );
-
-            float xn2 = cosf( lat ) * sinf( lon + lon_delta );
-            float yn2 = sinf( lat ) * sinf( lon + lon_delta );
-            float zn2 = cosf( lon + lon_delta );
-
-            glNormal3f( xn2, yn2, zn2 );
-            glVertex3f( pos.x()+rad*xn2, pos.y()+rad*yn2, pos.z()+rad*zn2 );
-        }
-        glEnd() ;
-    }
 }
 
 

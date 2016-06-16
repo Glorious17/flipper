@@ -15,21 +15,25 @@ Cube::~Cube(){
 }
 
 void Cube::draw(){
-    // punkt rechts unten vorne
+
+    //Punkt rechts unten vorne
     float x = pos.x() + (width/2.0);
     float y = pos.y() - (height/2.0);
     float z = pos.z() + (length/2.0);
 
+    //Alle Eckpunkte werden für alle Seiten in den Array geschrieben
     float faces[6][4][3] = {
         {{x, y, z}, {x, y+height, z}, {x-width, y+height, z}, {x-width, y, z}}, //FRONT
-        {{x, y, z-length}, {x, y+height, z-length}, {x-width, y+height, z-length}, {x-width, y, z-length}}, //BACK2
+        {{x, y, z-length}, {x, y+height, z-length}, {x-width, y+height, z-length}, {x-width, y, z-length}}, //BACK
         {{x, y, z}, {x, y, z-length}, {x, y+height, z-length}, {x, y+height, z}}, // RIGHT
         {{x-width, y, z}, {x-width, y+height, z}, {x-width, y+height, z-length}, {x-width, y, z-length}}, // LEFT
         {{x, y+height, z}, {x, y+height, z-length}, {x-width, y+height, z-length}, {x-width, y+height, z}}, //TOP
         {{x, y, z}, {x, y, z-length}, {x-width, y, z-length}, {x-width, y, z}} // BOTTOM
     };
 
-    /*float colors[6][3] = {
+    /*
+    //Wenn jede seite des Cubes eine andere Farbe haben soll
+    float colors[6][3] = {
         {0.6, 0.6, 0.6}, //FRONT
         {1.0, 0.0, 0.0}, //BACK
         {0.0, 0.0, 1.0}, //RIGHT
@@ -38,6 +42,7 @@ void Cube::draw(){
         {1.0, 1.0, 1.0} //BOTTOM
     };*/
 
+    //Setzt für jede Seite einen Normalvektor
     float normals[6][3] = {
         {0.0, 0.0, 1.0}, //FRONT
         {0.0, 0.0, -1.0}, //BACK
@@ -47,6 +52,7 @@ void Cube::draw(){
         {0.0, -1.0, 0.0} //BOTTOM
     };
 
+    //erstellt alle 6 seiten eines Quaders
     glBegin(GL_QUADS);
         for(int i = 0; i < 6; i++){
             glColor3f(red, green, blue);
@@ -58,6 +64,8 @@ void Cube::draw(){
         }
     glEnd();
 }
+
+//Setter---------------------------------------------------
 
 void Cube::setColor(float red, float green, float blue){
     this->red = red;
@@ -80,3 +88,32 @@ void Cube::setHeight(float height){
 void Cube::setLength(float length){
     this->length = length;
 }
+
+//Getter---------------------------------------------------
+
+QVector3D Cube::getPos(){
+    return pos;
+}
+
+float Cube::getWidth(){
+    return width;
+}
+
+float Cube::getHeight(){
+    return height;
+}
+
+float Cube::getLength(){
+    return length;
+}
+
+
+
+
+
+
+
+
+
+
+

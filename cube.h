@@ -11,11 +11,19 @@ public:
     ~Cube();
 
     void draw();
+
+    //Setter
     void setColor(float red, float green, float blue);
     void setPos(QVector3D pos);
     void setWidth(float width);
     void setHeight(float height);
     void setLength(float length);
+
+    //Getter
+    QVector3D getPos();
+    float getWidth();
+    float getHeight();
+    float getLength();
 
 private:
     //Cube

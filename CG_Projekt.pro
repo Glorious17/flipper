@@ -18,11 +18,13 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     qoglwidget.cpp \
     cube.cpp \
-    cylinder.cpp
+    cylinder.cpp \
+    sphere.cpp
 
 HEADERS  += mainwindow.h \
     qoglwidget.h \
     cube.h \
-    cylinder.h
+    cylinder.h \
+    sphere.h
 
 FORMS    += mainwindow.ui
