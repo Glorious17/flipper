@@ -1,39 +1,35 @@
-#ifndef CYLINDER_H
-#define CYLINDER_H
+#ifndef SPHERE_H
+#define SPHERE_H
 
 #include <QOpenGLFunctions>
 #include <QVector3D>
 
-class Cylinder
+class Sphere
 {
 public:
-    Cylinder(QVector3D pos, float radius, float height);
-    ~Cylinder();
+    Sphere(QVector3D pos, float radius);
+    ~Sphere();
 
     void draw();
 
     //Setter
     void setColor(float red, float green, float blue);
-    void setPos(QVector3D pos);
-    void setHeight(float height);
+    void setPos(QVector3D);
     void setRadius(float radius);
 
     //Getter
     QVector3D getPos();
-    float getHeight();
     float getRadius();
 
 private:
-    //Cylinder
+    //Sphere
     QVector3D pos;
     float radius;
-    float height;
 
-    //color
+    //Color
     float red;
     float green;
     float blue;
-
 };
 
-#endif // CYLINDER_H
+#endif // SPHERE_H
