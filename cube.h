@@ -4,10 +4,11 @@
 #include <QOpenGLFunctions>
 #include <QVector3D>
 
-class Cube
+class Cube : protected QOpenGLFunctions
 {
 public:
     Cube(QVector3D pos, float width, float height, float length);
+    Cube();
     ~Cube();
 
     void draw();

@@ -11,6 +11,10 @@ Sphere::Sphere(QVector3D pos, float radius)
     blue = 1.0;
 }
 
+Sphere::Sphere(){
+
+}
+
 Sphere::~Sphere()
 {
 }
@@ -18,60 +22,44 @@ Sphere::~Sphere()
 void Sphere::draw(){
 
 
-    int latitudes = 45;         //breitengrade = horizontal
-    int longtitudes = 45;       //längengrade = vertikal
+    int latitudes = 90;         //breitengrade = horizontal
+    int longtitudes = 90;       //längengrade = vertikal
 
     //https://de.wikipedia.org/wiki/Kugel
 
-    float hor_delta = (2.0f * M_PI)/hor_strips;
-    float ver_delta = (M_PI)/ver_strips;
+    float hor_delta = (2.0f * M_PI)/float(latitudes);  //delta_theta
+    float ver_delta = (M_PI)/float(longtitudes);       //delta_phi
 
-
-    for(int i = 0; i < ver_strips; i++){
-
-        float ver_step = i * ver_delta;
-
+    glColor3f(red, green, blue);
+    for(float i = 0.0; i < 1.0f * M_PI; i += ver_delta){
         glBegin(GL_QUAD_STRIP);
-        glColor3f(red, green, blue);
-        for(int j = 0; j < hor_strips; j++){
-            float hor_step = j * hor_delta;
+        for(float j = 0.0; j <= 2.0f*M_PI + hor_delta; j += hor_delta){
 
-            float xn = sinf(ver_step) * sinf(hor_step);
-            float yn = sinf(ver_step) * cosf(hor_step);
-            float zn = sinf(ver_step) * cosf(hor_step);
-
-            float x = pos.x() + radius * xn;
-            float y = pos.y() + radius * yn;
-            float z = pos.z() + radius * zn;
+            float xn = sinf(i) * cosf(j);
+            float yn = sinf(i) * sinf(j);
+            float zn = cosf(i);
 
             glNormal3f(xn, yn, zn);
-            glVertex3f(x, y, z);
+            glVertex3f(pos.x() + radius * xn, pos.y() + radius * yn, pos.z() + radius * zn);
 
-            xn = sinf(ver_step) * sinf(hor_step + hor_delta);
-            yn = sinf(ver_step) * cosf(hor_step + hor_delta);
-            zn = sinf(ver_step) * cosf(hor_step + hor_delta);
+            float xn2 = sinf(i+ver_delta) * cosf(j);
+            float yn2 = sinf(i+ver_delta) * sinf(j);
+            float zn2 = cosf(i+ver_delta);
 
-            x = pos.x() + radius * xn;
-            y = pos.y() + radius * yn;
-            z = pos.z() + radius * zn;
-
-            glVertex3f(x, y, z);
+            glVertex3f(pos.x() + radius * xn2, pos.y() + radius * yn2, pos.z() + radius * zn2);
         }
         glEnd();
     }
 
-    /*int nr_lat = 45;
-    int nr_lon = 45;
-
+    /*
     // Angle delta in both directions
-    const float lat_delta = M_PI / float( nr_lat );
-    const float lon_delta = M_PI / float( nr_lon );
+    const float lat_delta = M_PI / float( 90 );
+    const float lon_delta = M_PI / float( 90 );
 
     // Create horizontal stripes of squares
     for( float lon = 0.0f; lon < 1.0f*M_PI; lon += lon_delta )
     {
         glBegin( GL_QUAD_STRIP ) ;
-        glColor3f(red, green, blue);
         for( float lat = 0.0f; lat <= 2.0f*M_PI; lat += lat_delta )
         {
             // Each iteration adds another square, the other vertices

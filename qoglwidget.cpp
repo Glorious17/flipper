@@ -1,5 +1,9 @@
 #include "qoglwidget.h"
 #include <cmath>
+#include <QDebug>
+#include "cylinder.h"
+#include "sphere.h"
+#include "cube.h"
 
 QOGLWidget::QOGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 {
@@ -9,14 +13,22 @@ QOGLWidget::QOGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 
     xTran = 0;
     yTran = 0;
+    zTran = 0;
 
     scale = 1.0;
 
-    timer_game = new QTimer(this);
-    timer_game->start(17);
+    timer_game = new QTimer(this);                              //Ein Spieltimer wird erstellt der in bestimmten intervallen das Spiel vorantreibt
+    timer_game->start(17);                                      //Timer soll alle 34 millisekunden auslösen (entspricht etwa 60 fps)
 
-    // Everytime the timer fires, the animation is going one step forward
-    connect(timer_game, SIGNAL(timeout()), this, SLOT(gameUpdate()));
+    ball = Sphere(QVector3D(0.0, 2.0, 0.0), 1.0);               //Die Spielkugel wird erstellt
+    cylinder = Cylinder(QVector3D(-4.0, 1.0, -2.0), 1.0, 2.0);  //Ein Zylinder wird erstellt
+
+    for(int i = 0; i < 4; i++){
+        obstacle[i] = Cube(QVector3D(0.0, 0.0, 0.0), 1.0, 1.0, 1.0);
+    }
+
+    setFocusPolicy(Qt::ClickFocus);                                     //Muss aktiviert sein, damit das Widget Key Events annimmt (da KeyEvents Fokus benötigen)
+    connect(timer_game, SIGNAL(timeout()), this, SLOT(gameUpdate()));   //Immer wenn der Timer tickt, wird das SIGNAL vom SLOT gameUpdate() aufgefangen
 }
 
 QOGLWidget::~QOGLWidget()
@@ -24,8 +36,8 @@ QOGLWidget::~QOGLWidget()
 }
 
 void QOGLWidget::gameUpdate(){
-    if(cylinder1.getPos().x() < 4.00){
-        cylinder1.setPos(QVector3D(cylinder1.getPos().x()+0.05, 1.0, 0.0));
+    if(cylinder.getPos().x() < 4.00){
+        cylinder.setPos(QVector3D(cylinder.getPos().x()+0.05, 1.0, 0.0));
     }
     update();
 }
@@ -46,7 +58,7 @@ void QOGLWidget::paintGL()
     glRotatef(zRot, 0.0, 0.0, 1.0);
 
     //Die Komplette Ansicht wird verschoben
-    glTranslatef(xTran, yTran, 0.0);
+    glTranslatef(xTran, yTran, zTran);
 
     //Die Ansicht wird an allen Achsen gleichgroß skaliert
     glScalef(scale, scale, scale);
@@ -68,17 +80,11 @@ void QOGLWidget::paintGL()
     }
     glEnd();
 
-    cube1.setColor(0.0, 1.0, 0.0);
-    cube1.setPos(QVector3D(0.0, 1.0, 5.0));
-    cube1.draw();
+    cylinder.setColor(0.0, 0.0, 1.0);
+    cylinder.draw();
 
-    cylinder1.setColor(0.0, 0.0, 1.0);
-    cylinder1.setRadius(0.5);
-    cylinder1.draw();
-
-    sphere1.setPos(QVector3D(0.0, 1.0, 0.0));
-    sphere1.setRadius(2.0);
-    sphere1.draw();
+    ball.setColor(1.0, 1.0, 1.0);
+    ball.draw();
 
     glPopMatrix();
     //----------------------------DRAW EVERYTHING
@@ -131,6 +137,13 @@ void QOGLWidget::resizeGL(int w, int h)
     glLoadIdentity();
 }
 
+void QOGLWidget::keyPressEvent(QKeyEvent *event)
+{
+    if(event->key() == Qt::Key_Return ||event->key() == Qt::Key_Enter){
+        qDebug("enter gedrückt");
+    }
+}
+
 void QOGLWidget::mousePressEvent(QMouseEvent *event)
 {
     lastpos = event->pos();
@@ -157,11 +170,12 @@ void QOGLWidget::mouseMoveEvent(QMouseEvent *event)
     {
         float dx = 0;
         float dy = 0;
+        float dz = 0;
         dx = ((lastpos.x() - event->x()) * 0.005) * (-1);
-        dy = ((lastpos.y() - event->y()) * 0.005) * (1);
+        dz = ((lastpos.y() - event->y()) * 0.005) * (-1);
 
         // Now let the world know that we want to translate
-        emit changeTranslation( dx, dy );
+        emit changeTranslation(dx, dy, dz);
     }
 
     // Make the current position the starting point for the next dragging step
@@ -174,11 +188,11 @@ void QOGLWidget::wheelEvent(QWheelEvent *event)
     emit changeZoom(dzoom);
 }
 
-void QOGLWidget::onChangeTranslation(float dx, float dy)
+void QOGLWidget::onChangeTranslation(float dx, float dy, float dz)
 {
-    // To apply the requested Translation deltas, we increment...
     xTran = xTran + dx;
     yTran = yTran + dy;
+    zTran = zTran + dz;
 
     update();
 }
