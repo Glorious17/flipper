@@ -57,9 +57,9 @@ void Cube::draw(){
     };
 
     //erstellt alle 6 seiten eines Quaders
+    glColor3f(red, green, blue);
     glBegin(GL_QUADS);
         for(int i = 0; i < 6; i++){
-            glColor3f(red, green, blue);
             glNormal3f(normals[i][0], normals[i][1], normals[i][2]);
             glVertex3f(faces[i][0][0], faces[i][0][1], faces[i][0][2]);
             glVertex3f(faces[i][1][0], faces[i][1][1], faces[i][1][2]);

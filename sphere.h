@@ -15,16 +15,20 @@ public:
 
     //Setter
     void setColor(float red, float green, float blue);
-    void setPos(QVector3D);
+    void setPos(QVector3D pod);
+    void setDirection(QVector3D direction);
+    void updatePosition();
     void setRadius(float radius);
 
     //Getter
     QVector3D getPos();
+    QVector3D getDirection();
     float getRadius();
 
 private:
     //Sphere
     QVector3D pos;
+    QVector3D direction;
     float radius;
 
     //Color

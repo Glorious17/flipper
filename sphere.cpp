@@ -4,6 +4,7 @@
 Sphere::Sphere(QVector3D pos, float radius)
 {
     this->pos = pos;
+    this->direction = QVector3D(0.0, 0.0, 0.0);
     this->radius = radius;
 
     red = 1.0;
@@ -50,37 +51,18 @@ void Sphere::draw(){
         }
         glEnd();
     }
+}
 
-    /*
-    // Angle delta in both directions
-    const float lat_delta = M_PI / float( 90 );
-    const float lon_delta = M_PI / float( 90 );
-
-    // Create horizontal stripes of squares
-    for( float lon = 0.0f; lon < 1.0f*M_PI; lon += lon_delta )
-    {
-        glBegin( GL_QUAD_STRIP ) ;
-        for( float lat = 0.0f; lat <= 2.0f*M_PI; lat += lat_delta )
-        {
-            // Each iteration adds another square, the other vertices
-            // are taken from the existing stripe
-            float xn1 = cosf( lat ) * sinf( lon );
-            float yn1 = sinf( lat ) * sinf( lon );
-            float zn1 = cosf( lon );
-
-            // Set normal vector (important for lighting!)
-            glNormal3f( xn1, yn1, zn1 );
-            glVertex3f( pos.x()+radius*xn1, pos.y()+radius*yn1, pos.z()+radius*zn1 );
-
-            float xn2 = cosf( lat ) * sinf( lon + lon_delta );
-            float yn2 = sinf( lat ) * sinf( lon + lon_delta );
-            float zn2 = cosf( lon + lon_delta );
-
-            glNormal3f( xn2, yn2, zn2 );
-            glVertex3f( pos.x()+radius*xn2, pos.y()+radius*yn2, pos.z()+radius*zn2 );
+void Sphere::updatePosition(){
+    if(pos.y() >= -2.0f){
+        if(direction.y() > -0.981f){
+            direction -= QVector3D(0.0, 0.00981f, 0.0);
         }
-        glEnd() ;
-    }*/
+        pos += direction;
+    }else if(pos.y() < -2.0f){
+        pos.setY(-2.0f);
+        direction.setY(0.0f);
+    }
 }
 
 //Setter---------------------------------------------------
@@ -95,6 +77,10 @@ void Sphere::setPos(QVector3D pos){
     this->pos = pos;
 }
 
+void Sphere::setDirection(QVector3D direction){
+    this->direction = direction;
+}
+
 void Sphere::setRadius(float radius){
     this->radius = radius;
 }
@@ -104,6 +90,10 @@ void Sphere::setRadius(float radius){
 
 QVector3D Sphere::getPos(){
     return pos;
+}
+
+QVector3D Sphere::getDirection(){
+    return direction;
 }
 
 float Sphere::getRadius(){

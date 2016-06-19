@@ -18,14 +18,17 @@ QOGLWidget::QOGLWidget(QWidget *parent) : QOpenGLWidget(parent)
     scale = 1.0;
 
     timer_game = new QTimer(this);                              //Ein Spieltimer wird erstellt der in bestimmten intervallen das Spiel vorantreibt
-    timer_game->start(17);                                      //Timer soll alle 34 millisekunden auslösen (entspricht etwa 60 fps)
+    timer_game->start(17);                                      //Timer soll alle 34 millisekunden auslösen (entspricht etwa 30 fps (17/1000 ~ 60fps))
 
-    ball = Sphere(QVector3D(0.0, 2.0, 0.0), 1.0);               //Die Spielkugel wird erstellt
-    cylinder = Cylinder(QVector3D(-4.0, 1.0, -2.0), 1.0, 2.0);  //Ein Zylinder wird erstellt
 
-    for(int i = 0; i < 4; i++){
-        obstacle[i] = Cube(QVector3D(0.0, 0.0, 0.0), 1.0, 1.0, 1.0);
-    }
+    ball = Sphere(QVector3D(0.0, 4.0, 0.0), 0.5);               //Die Spielkugel wird erstellt
+    ball.setColor(1.0, 1.0, 1.0);
+    ball.setDirection(QVector3D(0.0, 0.5, 0.0));
+
+    cylinder = Cylinder(QVector3D(-4.0, -2.0, 0.0), 1.0, 2.0);  //Ein Zylinder wird erstellt
+
+    obstacle[0] = Cube(QVector3D(0.0, 2.0, 0.0), 4.0, 1.0, 1.0);
+
 
     setFocusPolicy(Qt::ClickFocus);                                     //Muss aktiviert sein, damit das Widget Key Events annimmt (da KeyEvents Fokus benötigen)
     connect(timer_game, SIGNAL(timeout()), this, SLOT(gameUpdate()));   //Immer wenn der Timer tickt, wird das SIGNAL vom SLOT gameUpdate() aufgefangen
@@ -36,9 +39,7 @@ QOGLWidget::~QOGLWidget()
 }
 
 void QOGLWidget::gameUpdate(){
-    if(cylinder.getPos().x() < 4.00){
-        cylinder.setPos(QVector3D(cylinder.getPos().x()+0.05, 1.0, 0.0));
-    }
+    ball.updatePosition();
     update();
 }
 
@@ -48,7 +49,7 @@ void QOGLWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Aus dem zwischenspeicher wird alles gelöscht
     glMatrixMode(GL_PROJECTION);                        //Wechselt in den Projection Matrix Mode
     glLoadIdentity();                                   //Projection Matrix wird gecleared
-    glOrtho(-5, 5, -5, 5, -20, 20);                     //Die ränder von allem was man sehen kann wird gesetzt
+    glOrtho(-8, 8, -8, 8, -50, 50);                     //Die ränder von allem was man sehen kann wird gesetzt
     glMatrixMode(GL_MODELVIEW);                         //Wechselt in den Modelview um objekte zu rendern
     glLoadIdentity();                                   //Modelview wird erst gecleared
 
@@ -64,7 +65,7 @@ void QOGLWidget::paintGL()
     glScalef(scale, scale, scale);
 
     //DRAW EVERYTHING----------------------------
-    glPushMatrix();
+    //glPushMatrix();
 
     //Ein Bunter Boden wird erstellt
     glBegin(GL_POLYGON);
@@ -72,9 +73,9 @@ void QOGLWidget::paintGL()
     for(int i = 0; i < 45; i++){
         float delta = (2.0f * M_PI) / 45;
         float step = i*delta;
-        float x = 15 * cosf(step);
-        float y = 0.0;
-        float z = 15 * sinf(step);
+        float x = 30 * cosf(step);
+        float y = -5.0;
+        float z = 30 * sinf(step);
         glColor3f(1.0/i, (1.0/45.0) * i, 0.5);
         glVertex3f(x, y, z);
     }
@@ -83,10 +84,12 @@ void QOGLWidget::paintGL()
     cylinder.setColor(0.0, 0.0, 1.0);
     cylinder.draw();
 
-    ball.setColor(1.0, 1.0, 1.0);
+    obstacle[0].setColor(1.0, 0.0, 0.0);
+    obstacle[0].draw();
+
     ball.draw();
 
-    glPopMatrix();
+    //glPopMatrix();
     //----------------------------DRAW EVERYTHING
 }
 
@@ -110,7 +113,7 @@ void QOGLWidget::initializeGL()
 
     //LIGHT 1----------------------------------------------
     //Die Position des Lichts wird gesetzt
-    float lightPosition1[] = { 0.0, 3.0, 5.0, 1.0 };
+    float lightPosition1[] = { 0.0, 3.0, 20.0, 1.0 };
     glLightfv(GL_LIGHT1, GL_POSITION, lightPosition1);
 
     float light_diffuse1[] = {0.8f, 0.8f, 0.8f, 1.f };
@@ -140,7 +143,7 @@ void QOGLWidget::resizeGL(int w, int h)
 void QOGLWidget::keyPressEvent(QKeyEvent *event)
 {
     if(event->key() == Qt::Key_Return ||event->key() == Qt::Key_Enter){
-        qDebug("enter gedrückt");
+        ball.setDirection(QVector3D(0.0, 0.5, 0.0));
     }
 }
 
