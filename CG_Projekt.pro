@@ -19,12 +19,14 @@ SOURCES += main.cpp\
     qoglwidget.cpp \
     cube.cpp \
     cylinder.cpp \
-    sphere.cpp
+    sphere.cpp \
+    geoobject.cpp
 
 HEADERS  += mainwindow.h \
     qoglwidget.h \
     cube.h \
     cylinder.h \
-    sphere.h
+    sphere.h \
+    geoobject.h
 
 FORMS    += mainwindow.ui

@@ -4,6 +4,7 @@
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
 #include <QMouseEvent>
+#include <QKeyEvent>
 #include <QVector3D>
 #include <QWheelEvent>
 #include <QTimer>
@@ -28,18 +29,20 @@ private:
     int zRot;
     float xTran;
     float yTran;
+    float zTran;
     float scale;
 
     float height;
 
-    Cube cube1 = Cube(QVector3D(0.0, 0.0, 0.0), 1.0, 0.5, 2.0);
-    Cylinder cylinder1 = Cylinder(QVector3D(-4.0, 1.0, 0.0), 2, 2);
-    Sphere sphere1 = Sphere(QVector3D(0.0, 1.35, 0.0), 0.15);
+    Cube obstacle[4];
+    Cylinder cylinder;
+    Sphere ball;
 
 protected:
     void initializeGL();
     void resizeGL(int w, int h);
     void paintGL();
+    void keyPressEvent(QKeyEvent *event);
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void wheelEvent(QWheelEvent *event);
@@ -47,13 +50,13 @@ protected:
 public slots:
     void onChangeZoom(float dzoom);
     void onChangeRotation(int dx, int dy, int dz);
-    void onChangeTranslation(float dx, float dy);
+    void onChangeTranslation(float dx, float dy, float dz);
     void gameUpdate();
 
 signals:
     void changeZoom(float dzoom);
     void changeRotation(int dx, int dy, int dz);
-    void changeTranslation(float dx, float dy);
+    void changeTranslation(float dx, float dy, float dz);
 };
 
 #endif // QOGLWIDGET_H

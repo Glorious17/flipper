@@ -12,6 +12,10 @@ Cylinder::Cylinder(QVector3D pos, float radius, float height)
     blue = 1.0;
 }
 
+Cylinder::Cylinder(){
+
+}
+
 Cylinder::~Cylinder(){
 }
 

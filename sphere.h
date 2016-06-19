@@ -4,10 +4,11 @@
 #include <QOpenGLFunctions>
 #include <QVector3D>
 
-class Sphere
+class Sphere : protected QOpenGLFunctions
 {
 public:
     Sphere(QVector3D pos, float radius);
+    Sphere();
     ~Sphere();
 
     void draw();

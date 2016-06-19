@@ -40,7 +40,7 @@
    </property>
    <widget class="QMenu" name="menuTest1">
     <property name="title">
-     <string>Test1</string>
+     <string>Info</string>
     </property>
     <addaction name="actionHallo"/>
     <addaction name="actionDas"/>
@@ -53,8 +53,9 @@
    </widget>
    <widget class="QMenu" name="menuTest2">
     <property name="title">
-     <string>Test2</string>
+     <string>How To Play</string>
     </property>
+    <addaction name="actionAnleitung"/>
    </widget>
    <addaction name="menuTest1"/>
    <addaction name="menuTest2"/>
@@ -96,6 +97,11 @@
   <action name="actionEz">
    <property name="text">
     <string>ez</string>
+   </property>
+  </action>
+  <action name="actionAnleitung">
+   <property name="text">
+    <string>Anleitung</string>
    </property>
   </action>
  </widget>

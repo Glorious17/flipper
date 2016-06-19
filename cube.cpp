@@ -11,6 +11,10 @@ Cube::Cube(QVector3D pos, float width, float height, float length)
     blue = 1.0;
 }
 
+Cube::Cube(){
+
+}
+
 Cube::~Cube(){
 }
 

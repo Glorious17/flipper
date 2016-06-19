@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     connect(ui->openGLWidget, SIGNAL(changeRotation(int, int, int)), ui->openGLWidget, SLOT(onChangeRotation(int, int, int)));
-    connect(ui->openGLWidget, SIGNAL(changeTranslation(float, float)), ui->openGLWidget, SLOT(onChangeTranslation(float, float)));
+    connect(ui->openGLWidget, SIGNAL(changeTranslation(float, float, float)), ui->openGLWidget, SLOT(onChangeTranslation(float, float, float)));
     connect(ui->openGLWidget, SIGNAL(changeZoom(float)), ui->openGLWidget, SLOT(onChangeZoom(float)));
 }
 

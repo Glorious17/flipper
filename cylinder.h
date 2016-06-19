@@ -4,10 +4,11 @@
 #include <QOpenGLFunctions>
 #include <QVector3D>
 
-class Cylinder
+class Cylinder : protected QOpenGLFunctions
 {
 public:
     Cylinder(QVector3D pos, float radius, float height);
+    Cylinder();
     ~Cylinder();
 
     void draw();
