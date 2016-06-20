@@ -27,8 +27,15 @@ QOGLWidget::QOGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 
     cylinder = Cylinder(QVector3D(-4.0, -2.0, 0.0), 1.0, 2.0);  //Ein Zylinder wird erstellt
 
-    obstacle[0] = Cube(QVector3D(0.0, 2.0, 0.0), 4.0, 1.0, 1.0);
+    obstacle[0] = Cube(QVector3D(0.0, 1.0, 0.0), 4.0, 1.0, 1.0);
+    obstacle[0].setColor(1.0, 0.0, 0.0);
+    obstacle[0].setRotation(0.0, 0, 0.0);
 
+    ball2 = Sphere(QVector3D(0.0, 0.0, 0.0), 0.6);               //Die Spielkugel wird erstellt
+    ball2.setColor(0.0, 0.0, 1.0);
+
+    obstacle[1] = Cube(QVector3D(0.0, 1.0, 0.0), 6.0, 0.05, 0.05);
+    obstacle[1].setColor(0.0, 1.0, 0.0);
 
     setFocusPolicy(Qt::ClickFocus);                                     //Muss aktiviert sein, damit das Widget Key Events annimmt (da KeyEvents Fokus benötigen)
     connect(timer_game, SIGNAL(timeout()), this, SLOT(gameUpdate()));   //Immer wenn der Timer tickt, wird das SIGNAL vom SLOT gameUpdate() aufgefangen
@@ -40,7 +47,12 @@ QOGLWidget::~QOGLWidget()
 
 void QOGLWidget::gameUpdate(){
     ball.updatePosition();
+    obstacle[0].setRotation(yRot, 0, 0);
     update();
+}
+
+void QOGLWidget::checkCollision(Sphere sphere, Cube cube){
+    sphere.getDirection();
 }
 
 void QOGLWidget::paintGL()
@@ -58,14 +70,13 @@ void QOGLWidget::paintGL()
     glRotatef(yRot, 0.0, 1.0, 0.0);
     glRotatef(zRot, 0.0, 0.0, 1.0);
 
-    //Die Komplette Ansicht wird verschoben
-    glTranslatef(xTran, yTran, zTran);
+    glTranslatef(xTran, yTran, zTran);                  //Die Komplette Ansicht wird verschoben
+    glScalef(scale, scale, scale);                      //Die Ansicht wird an allen Achsen gleichgroß skaliert
 
-    //Die Ansicht wird an allen Achsen gleichgroß skaliert
-    glScalef(scale, scale, scale);
+    glGetFloatv(GL_MODELVIEW_MATRIX, modelview);        //speichert die MODELVIEW_MATRIX in modelview
 
     //DRAW EVERYTHING----------------------------
-    //glPushMatrix();
+    glPushMatrix();
 
     //Ein Bunter Boden wird erstellt
     glBegin(GL_POLYGON);
@@ -84,12 +95,17 @@ void QOGLWidget::paintGL()
     cylinder.setColor(0.0, 0.0, 1.0);
     cylinder.draw();
 
-    obstacle[0].setColor(1.0, 0.0, 0.0);
     obstacle[0].draw();
+    obstacle[0].getGlobalCoordinates();
+
+    obstacle[1].draw();
 
     ball.draw();
 
-    //glPopMatrix();
+    ball2.setPos(obstacle[0].getGlobalCoordinates());
+    ball2.draw();
+
+    glPopMatrix();
     //----------------------------DRAW EVERYTHING
 }
 

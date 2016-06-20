@@ -21,6 +21,7 @@ public:
     ~QOGLWidget();
 
 private:
+
     QPoint lastpos;
     QTimer* timer_game;
 
@@ -32,11 +33,14 @@ private:
     float zTran;
     float scale;
 
-    float height;
+    GLfloat* modelview;
 
     Cube obstacle[4];
     Cylinder cylinder;
     Sphere ball;
+    Sphere ball2;
+
+    void checkCollision(Sphere sphere, Cube cube);
 
 protected:
     void initializeGL();

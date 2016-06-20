@@ -6,6 +6,9 @@ Cube::Cube(QVector3D pos, float width, float height, float length)
     this->width = width;
     this->height = height;
     this->length = length;
+    xRot = 0.0;
+    yRot = 0.0;
+    zRot = 0.0;
     red = 1.0;
     green = 1.0;
     blue = 1.0;
@@ -20,10 +23,20 @@ Cube::~Cube(){
 
 void Cube::draw(){
 
+    glPushMatrix();
+
+    glTranslatef(pos.x(), pos.y(), pos.z());
+
+    glRotatef(xRot, 1.0, 0.0, 0.0);
+    glRotatef(yRot, 0.0, 1.0, 0.0);
+    glRotatef(zRot, 0.0, 0.0, 1.0);
+
+    qDebug("local x: %f || y: %f || z: %f", pos.x(), pos.y(), pos.z());
+
     //Punkt rechts unten vorne
-    float x = pos.x() + (width/2.0);
-    float y = pos.y() - (height/2.0);
-    float z = pos.z() + (length/2.0);
+    float x = (width/2.0);
+    float y = -(height/2.0);
+    float z = (length/2.0);
 
     //Alle Eckpunkte werden für alle Seiten in den Array geschrieben
     float faces[6][4][3] = {
@@ -55,7 +68,7 @@ void Cube::draw(){
         {0.0, 1.0, 0.0}, //TOP
         {0.0, -1.0, 0.0} //BOTTOM
     };
-
+    //------------------------------------------------------------------6 PLANES, check collision auf allen 6 planes
     //erstellt alle 6 seiten eines Quaders
     glColor3f(red, green, blue);
     glBegin(GL_QUADS);
@@ -67,6 +80,14 @@ void Cube::draw(){
             glVertex3f(faces[i][3][0], faces[i][3][1], faces[i][3][2]);
         }
     glEnd();
+
+    glPopMatrix();
+}
+
+QVector3D Cube::getGlobalCoordinates(){
+    QVector3D worldPos = matrix.inverted() * pos;
+    qDebug("global x: %f || y: %f || z: %f", worldPos.x(), worldPos.y(), worldPos.z());
+    return worldPos;
 }
 
 //Setter---------------------------------------------------
@@ -78,6 +99,9 @@ void Cube::setColor(float red, float green, float blue){
 }
 
 void Cube::setPos(QVector3D pos){
+    QVector3D dPos = QVector3D(pos.x() - this->pos.x(), pos.y() - this->pos.y(), pos.z() - this->pos.z());
+    matrix.translate(dPos);
+
     this->pos = pos;
 }
 
@@ -91,6 +115,20 @@ void Cube::setHeight(float height){
 
 void Cube::setLength(float length){
     this->length = length;
+}
+
+void Cube::setRotation(float xRot, float yRot, float zRot){
+    float dxRot = xRot - this->xRot;
+    float dyRot = yRot - this->yRot;
+    float dzRot = zRot - this->zRot;
+    matrix.rotate(dxRot, QVector3D(1.0, 0.0, 0.0));
+    matrix.rotate(dyRot, QVector3D(0.0, 1.0, 0.0));
+    matrix.rotate(dzRot, QVector3D(0.0, 0.0, 1.0));
+
+    this->xRot = xRot;
+    this->yRot = yRot;
+    this->zRot = zRot;
+
 }
 
 //Getter---------------------------------------------------
