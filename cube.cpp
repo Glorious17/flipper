@@ -9,6 +9,10 @@ Cube::Cube(QVector3D pos, float width, float height, float length)
     xRot = 0.0;
     yRot = 0.0;
     zRot = 0.0;
+
+    matrix = QMatrix4x4();
+    matrix.translate(pos);
+
     red = 1.0;
     green = 1.0;
     blue = 1.0;
@@ -30,8 +34,6 @@ void Cube::draw(){
     glRotatef(xRot, 1.0, 0.0, 0.0);
     glRotatef(yRot, 0.0, 1.0, 0.0);
     glRotatef(zRot, 0.0, 0.0, 1.0);
-
-    qDebug("local x: %f || y: %f || z: %f", pos.x(), pos.y(), pos.z());
 
     //Punkt rechts unten vorne
     float x = (width/2.0);
@@ -85,8 +87,7 @@ void Cube::draw(){
 }
 
 QVector3D Cube::getGlobalCoordinates(){
-    QVector3D worldPos = matrix.inverted() * pos;
-    qDebug("global x: %f || y: %f || z: %f", worldPos.x(), worldPos.y(), worldPos.z());
+    QVector3D worldPos = matrix * QVector3D(0.0, 0.0, 0.0);
     return worldPos;
 }
 
@@ -121,9 +122,9 @@ void Cube::setRotation(float xRot, float yRot, float zRot){
     float dxRot = xRot - this->xRot;
     float dyRot = yRot - this->yRot;
     float dzRot = zRot - this->zRot;
-    matrix.rotate(dxRot, QVector3D(1.0, 0.0, 0.0));
-    matrix.rotate(dyRot, QVector3D(0.0, 1.0, 0.0));
-    matrix.rotate(dzRot, QVector3D(0.0, 0.0, 1.0));
+    matrix.rotate(dxRot, 1.0, 0.0, 0.0);
+    matrix.rotate(dyRot, 0.0, 1.0, 0.0);
+    matrix.rotate(dzRot, 0.0, 0.0, 1.0);
 
     this->xRot = xRot;
     this->yRot = yRot;
