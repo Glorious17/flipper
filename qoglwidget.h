@@ -33,12 +33,10 @@ private:
     float zTran;
     float scale;
 
-    GLfloat* modelview;
+    const static int nr_cubes = 4;
 
-    Cube obstacle[4];
-    Cylinder cylinder;
+    Cube cube[nr_cubes];
     Sphere ball;
-    Sphere ball2;
 
     void checkCollision(Sphere sphere, Cube cube);
 

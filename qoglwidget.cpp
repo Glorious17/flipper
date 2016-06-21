@@ -5,10 +5,12 @@
 #include "sphere.h"
 #include "cube.h"
 
+int selectedCube = 0;
+
 QOGLWidget::QOGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 {
-    xRot = 25.0;
-    yRot = 0.0; //-25
+    xRot = 25;
+    yRot = 0; //-25.0
     zRot = 0;
 
     xTran = 0;
@@ -22,20 +24,19 @@ QOGLWidget::QOGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 
 
     ball = Sphere(QVector3D(0.0, 4.0, 0.0), 0.5);               //Die Spielkugel wird erstellt
-    ball.setColor(1.0, 1.0, 1.0);
+    ball.setColor(0.2, 1.0, 0.8);
     ball.setDirection(QVector3D(0.0, 0.5, 0.0));
 
-    cylinder = Cylinder(QVector3D(-4.0, -2.0, 0.0), 1.0, 2.0);  //Ein Zylinder wird erstellt
+    for(int i = 0; i < nr_cubes; i++){
+        cube[i] = Cube(QVector3D(0.0, 0.0, i*1.25), 4.0, 1.0, 1.0);
+        cube[i].setRotation(0.0, 0.0, 0.0);
+        if(i == selectedCube){
+            cube[i].setColor(0.0, 0.0, 1.0);
+        }else{
+            cube[i].setColor(1.0, 0.0, 0.0);
+        }
+    }
 
-    obstacle[0] = Cube(QVector3D(0.0, 1.0, 0.0), 4.0, 1.0, 1.0);
-    obstacle[0].setColor(1.0, 0.0, 0.0);
-    obstacle[0].setRotation(0.0, 0, 0.0);
-
-    ball2 = Sphere(QVector3D(0.0, 0.0, 0.0), 0.6);               //Die Spielkugel wird erstellt
-    ball2.setColor(0.0, 0.0, 1.0);
-
-    obstacle[1] = Cube(QVector3D(0.0, 1.0, 0.0), 6.0, 0.05, 0.05);
-    obstacle[1].setColor(0.0, 1.0, 0.0);
 
     setFocusPolicy(Qt::ClickFocus);                                     //Muss aktiviert sein, damit das Widget Key Events annimmt (da KeyEvents Fokus benötigen)
     connect(timer_game, SIGNAL(timeout()), this, SLOT(gameUpdate()));   //Immer wenn der Timer tickt, wird das SIGNAL vom SLOT gameUpdate() aufgefangen
@@ -47,7 +48,7 @@ QOGLWidget::~QOGLWidget()
 
 void QOGLWidget::gameUpdate(){
     ball.updatePosition();
-    obstacle[0].setRotation(yRot, 0, 0);
+    checkCollision(ball, cube[0]);
     update();
 }
 
@@ -73,8 +74,6 @@ void QOGLWidget::paintGL()
     glTranslatef(xTran, yTran, zTran);                  //Die Komplette Ansicht wird verschoben
     glScalef(scale, scale, scale);                      //Die Ansicht wird an allen Achsen gleichgroß skaliert
 
-    glGetFloatv(GL_MODELVIEW_MATRIX, modelview);        //speichert die MODELVIEW_MATRIX in modelview
-
     //DRAW EVERYTHING----------------------------
     glPushMatrix();
 
@@ -92,18 +91,11 @@ void QOGLWidget::paintGL()
     }
     glEnd();
 
-    cylinder.setColor(0.0, 0.0, 1.0);
-    cylinder.draw();
-
-    obstacle[0].draw();
-    obstacle[0].getGlobalCoordinates();
-
-    obstacle[1].draw();
+    for(int i = 0; i < nr_cubes; i++){
+        cube[i].draw();
+    }
 
     ball.draw();
-
-    ball2.setPos(obstacle[0].getGlobalCoordinates());
-    ball2.draw();
 
     glPopMatrix();
     //----------------------------DRAW EVERYTHING
@@ -160,6 +152,14 @@ void QOGLWidget::keyPressEvent(QKeyEvent *event)
 {
     if(event->key() == Qt::Key_Return ||event->key() == Qt::Key_Enter){
         ball.setDirection(QVector3D(0.0, 0.5, 0.0));
+        if(selectedCube + 1 < nr_cubes){
+            cube[selectedCube].setColor(1.0, 0.0, 0.0);
+            selectedCube++;
+            cube[selectedCube].setColor(0.0, 0.0, 1.0);
+        }else if(selectedCube + 1 == nr_cubes){
+            cube[selectedCube].setColor(1.0, 0.0, 0.0);
+            selectedCube++;
+        }
     }
 }
 
@@ -193,8 +193,13 @@ void QOGLWidget::mouseMoveEvent(QMouseEvent *event)
         dx = ((lastpos.x() - event->x()) * 0.005) * (-1);
         dz = ((lastpos.y() - event->y()) * 0.005) * (-1);
 
-        // Now let the world know that we want to translate
-        emit changeTranslation(dx, dy, dz);
+        if(selectedCube >= nr_cubes){
+            // Now let the world know that we want to translate
+            emit changeTranslation(dx, dy, dz);
+        }else{
+            QVector3D pos = cube[selectedCube].getPos();
+            cube[selectedCube].setPos(QVector3D(pos.x()+dx, pos.y(), pos.z()+dz));
+        }
     }
 
     // Make the current position the starting point for the next dragging step
@@ -232,13 +237,13 @@ void QOGLWidget::onChangeRotation(int dx, int dy, int dz)
 {
     // To apply the requested rotation deltas, we increment...
     xRot = xRot + dx;
-    if(yRot+dy < -180.0){
-        yRot = -180.0;
+    if(yRot+dy < -180){
+        yRot = -180;
     }
-    if(yRot+dy > 180.0){
-        yRot = 180.0;
+    if(yRot+dy > 180){
+        yRot = 180;
     }
-    if(yRot+dy > -180.0 && yRot+dy < 180.0){
+    if(yRot+dy > -180 && yRot+dy < 180){
         yRot = yRot + dy;
     }
     zRot = zRot + dz;
