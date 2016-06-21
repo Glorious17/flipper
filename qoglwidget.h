@@ -25,20 +25,24 @@ private:
     QPoint lastpos;
     QTimer* timer_game;
 
-    int xRot;
-    int yRot;
-    int zRot;
+    float xRot;
+    float yRot;
+
     float xTran;
     float yTran;
     float zTran;
+
     float scale;
 
-    const static int nr_cubes = 4;
+    const static int nr_cubes = 1;
 
     Cube cube[nr_cubes];
     Sphere ball;
 
     void checkCollision(Sphere sphere, Cube cube);
+    void changeZoom(float dzoom);
+    void changeRotation(float dx, float dy);
+    void changeTranslation(float dx, float dz);
 
 protected:
     void initializeGL();
@@ -50,15 +54,7 @@ protected:
     void wheelEvent(QWheelEvent *event);
 
 public slots:
-    void onChangeZoom(float dzoom);
-    void onChangeRotation(int dx, int dy, int dz);
-    void onChangeTranslation(float dx, float dy, float dz);
     void gameUpdate();
-
-signals:
-    void changeZoom(float dzoom);
-    void changeRotation(int dx, int dy, int dz);
-    void changeTranslation(float dx, float dy, float dz);
 };
 
 #endif // QOGLWIDGET_H

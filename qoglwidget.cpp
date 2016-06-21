@@ -10,12 +10,11 @@ int selectedCube = 0;
 QOGLWidget::QOGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 {
     xRot = 25;
-    yRot = 0; //-25.0
-    zRot = 0;
+    yRot = 0.0; //-25.0
 
-    xTran = 0;
-    yTran = 0;
-    zTran = 0;
+    xTran = 0.0;
+    yTran = 0.0;
+    zTran = 0.0;
 
     scale = 1.0;
 
@@ -69,7 +68,6 @@ void QOGLWidget::paintGL()
     //Rotiert die Komplette Ansicht
     glRotatef(xRot, 1.0, 0.0, 0.0);
     glRotatef(yRot, 0.0, 1.0, 0.0);
-    glRotatef(zRot, 0.0, 0.0, 1.0);
 
     glTranslatef(xTran, yTran, zTran);                  //Die Komplette Ansicht wird verschoben
     glScalef(scale, scale, scale);                      //Die Ansicht wird an allen Achsen gleichgroß skaliert
@@ -83,9 +81,9 @@ void QOGLWidget::paintGL()
     for(int i = 0; i < 45; i++){
         float delta = (2.0f * M_PI) / 45;
         float step = i*delta;
-        float x = 30 * cosf(step);
+        float x = 15 * cosf(step);
         float y = -5.0;
-        float z = 30 * sinf(step);
+        float z = 15 * sinf(step);
         glColor3f(1.0/i, (1.0/45.0) * i, 0.5);
         glVertex3f(x, y, z);
     }
@@ -150,16 +148,50 @@ void QOGLWidget::resizeGL(int w, int h)
 
 void QOGLWidget::keyPressEvent(QKeyEvent *event)
 {
-    if(event->key() == Qt::Key_Return ||event->key() == Qt::Key_Enter){
+    switch(event->key()){
+    case Qt::Key_Return:
         ball.setDirection(QVector3D(0.0, 0.5, 0.0));
-        if(selectedCube + 1 < nr_cubes){
+        if(selectedCube + 1 <= nr_cubes){
             cube[selectedCube].setColor(1.0, 0.0, 0.0);
+            cube[selectedCube+1].setColor(0.0, 0.0, 1.0);
             selectedCube++;
-            cube[selectedCube].setColor(0.0, 0.0, 1.0);
-        }else if(selectedCube + 1 == nr_cubes){
-            cube[selectedCube].setColor(1.0, 0.0, 0.0);
-            selectedCube++;
+            if(selectedCube == nr_cubes){
+                cube[selectedCube].setColor(1.0, 0.0, 0.0);
+            }
         }
+        break;
+    case Qt::Key_Right:
+        if(selectedCube >= nr_cubes){
+            xTran += 0.05;
+        }else{
+            QVector3D pos = cube[selectedCube].getPos();
+            cube[selectedCube].setPos(QVector3D(pos.x()+0.05, pos.y(), pos.z()));
+        }
+        break;
+    case Qt::Key_Left:
+        if(selectedCube >= nr_cubes){
+            xTran -= 0.05;
+        }else{
+            QVector3D pos = cube[selectedCube].getPos();
+            cube[selectedCube].setPos(QVector3D(pos.x()-0.05, pos.y(), pos.z()));
+        }
+        break;
+    case Qt::Key_Up:
+        if(selectedCube >= nr_cubes){
+            yTran += 0.05;
+        }else{
+            QVector3D pos = cube[selectedCube].getPos();
+            cube[selectedCube].setPos(QVector3D(pos.x(), pos.y()+0.05, pos.z()));
+        }
+        break;
+    case Qt::Key_Down:
+        if(selectedCube >= nr_cubes){
+            yTran -= 0.05;
+        }else{
+            QVector3D pos = cube[selectedCube].getPos();
+            cube[selectedCube].setPos(QVector3D(pos.x(), pos.y()-0.05, pos.z()));
+        }
+        break;
     }
 }
 
@@ -170,58 +202,49 @@ void QOGLWidget::mousePressEvent(QMouseEvent *event)
 
 void QOGLWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    // ... and while moving, we calculate the dragging deltas
-
-    // Left button: Rotating around y axis
+    // Left button: Rotating around x and y axis
     if(event->buttons() == Qt::LeftButton)
-    {
-        int dx = 0;
-        int dy = 0;
-        int dz = 0;
-        dy = lastpos.x() - event->x();
-
-        // Now let the world know that we want to rotate
-        emit changeRotation( dx, dy, dz );
-    }
-
-    // Right button: Translating to left/right, up/down
-    if(event->buttons() == Qt::RightButton)
     {
         float dx = 0;
         float dy = 0;
+        dx = (lastpos.y() - event->y()) * 0.3;
+        dy = (lastpos.x() - event->x()) * 0.3;
+
+        changeRotation(dx, dy);
+    }
+
+    // Right button: Translating to left/right, near/far
+    if(event->buttons() == Qt::RightButton)
+    {
+        float dx = 0;
         float dz = 0;
         dx = ((lastpos.x() - event->x()) * 0.005) * (-1);
         dz = ((lastpos.y() - event->y()) * 0.005) * (-1);
 
         if(selectedCube >= nr_cubes){
-            // Now let the world know that we want to translate
-            emit changeTranslation(dx, dy, dz);
+            changeTranslation(dx, dz);
         }else{
             QVector3D pos = cube[selectedCube].getPos();
             cube[selectedCube].setPos(QVector3D(pos.x()+dx, pos.y(), pos.z()+dz));
         }
     }
 
-    // Make the current position the starting point for the next dragging step
-    lastpos = event->pos();
+    lastpos = event->pos();                 //Die aktuelle Mauszeiger Position wird gespeichert
 }
 
 void QOGLWidget::wheelEvent(QWheelEvent *event)
 {
     float dzoom = event->angleDelta().ry() *0.0005;
-    emit changeZoom(dzoom);
+    changeZoom(dzoom);
 }
 
-void QOGLWidget::onChangeTranslation(float dx, float dy, float dz)
+void QOGLWidget::changeTranslation(float dx, float dz)
 {
     xTran = xTran + dx;
-    yTran = yTran + dy;
     zTran = zTran + dz;
-
-    update();
 }
 
-void QOGLWidget::onChangeZoom(float dzoom)
+void QOGLWidget::changeZoom(float dzoom)
 {
     scale = scale + dzoom;
     if(scale < 0.1){
@@ -229,25 +252,29 @@ void QOGLWidget::onChangeZoom(float dzoom)
     }else if(scale > 2.0){
         scale = 2.0;
     }
-    //qDebug("scale = %f | dzoom = %f", scale, dzoom);
-    update();
 }
 
-void QOGLWidget::onChangeRotation(int dx, int dy, int dz)
+void QOGLWidget::changeRotation(float dx, float dy)
 {
-    // To apply the requested rotation deltas, we increment...
-    xRot = xRot + dx;
-    if(yRot+dy < -180){
-        yRot = -180;
+    if(yRot+dy < -90){
+        yRot = -90;
     }
-    if(yRot+dy > 180){
-        yRot = 180;
+    if(yRot+dy > 90){
+        yRot = 90;
     }
-    if(yRot+dy > -180 && yRot+dy < 180){
+    if(yRot+dy > -90 && yRot+dy < 90){
         yRot = yRot + dy;
     }
-    zRot = zRot + dz;
-    update();
+
+    if(xRot+dx < 0){
+        xRot = 0;
+    }
+    if(xRot+dx > 90){
+        xRot = 90;
+    }
+    if(xRot+dx > 0 && xRot+dx < 90){
+        xRot = xRot + dx;
+    }
 }
 
 
