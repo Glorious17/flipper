@@ -34,7 +34,7 @@ private:
 
     float scale;
 
-    const static int nr_cubes = 1;
+    const static int nr_cubes = 4;
 
     Cube cube[nr_cubes];
     Sphere ball;
@@ -42,7 +42,7 @@ private:
     void checkCollision(Sphere sphere, Cube cube);
     void changeZoom(float dzoom);
     void changeRotation(float dx, float dy);
-    void changeTranslation(float dx, float dz);
+    void changeTranslation(float dx, float dy);
 
 protected:
     void initializeGL();

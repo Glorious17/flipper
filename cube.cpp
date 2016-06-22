@@ -86,9 +86,47 @@ void Cube::draw(){
     glPopMatrix();
 }
 
-QVector3D Cube::getGlobalCoordinates(){
-    QVector3D worldPos = matrix * QVector3D(0.0, 0.0, 0.0);
-    return worldPos;
+boolean Cube::checkIntersectionSphere(Sphere sphere){
+
+    QVector3D spherePos = sphere.getPos();
+
+    //checking bounding box
+
+    QVector3D linksUnten = getGlobalCoordinatesOf(pos-QVector3D(width/2.0, height/2.0, 0.0));
+    QVector3D linksOben = getGlobalCoordinatesOf(pos-QVector3D(width/2.0, -height/2.0, 0.0));
+    QVector3D rechtsUnten = getGlobalCoordinatesOf(pos+QVector3D(width/2.0, -height/2.0, 0.0));
+    QVector3D rechtsOben = getGlobalCoordinatesOf(pos+QVector3D(width/2.0, height/2.0, 0.0));
+
+    if((spherePos.x() > rechtsOben.x() && spherePos.x() > rechtsUnten.x()) ||
+            (spherePos.x() < linksOben.x() && spherePos.x() < linksUnten.x()) ||
+            (spherePos.y() > linksOben.y() && spherePos.y() > rechtsOben.y()) ||
+            (spherePos.y() < linksUnten.y() && spherePos.y() < rechtsUnten.y())){
+        return false;
+    }
+
+    //TOP PLANE
+
+    QVector3D x = getGlobalCoordinatesOf(QVector3D(pos.x(), pos.y()+(height/2.0), pos.z()));
+    QVector3D xn = getGlobalCoordinatesOf(QVector3D(0.0, 1.0, 0.0));
+
+    float skalarProdukt = QVector3D::dotProduct(sphere.getDirection(), xn);
+
+    if(skalarProdukt == 0.0){               //Wenn das Skalaprodukt 0 ist, sind die Vektoren senkrecht zueinander
+        return false;
+    }
+
+    float distance = (QVector3D::dotProduct(xn, x - sphere.getPos())/skalarProdukt);
+
+    if(distance <= 0){
+        return false;
+    }
+    qDebug("intersection %f", distance);
+    return true;
+}
+
+QVector3D Cube::getGlobalCoordinatesOf(QVector3D local){
+    QVector3D global = matrix * (local-pos);
+    return global;
 }
 
 //Setter---------------------------------------------------
@@ -150,7 +188,13 @@ float Cube::getLength(){
     return length;
 }
 
+float Cube::getXRot(){
+    return xRot;
+}
 
+float Cube::getZRot(){
+    return zRot;
+}
 
 
 
