@@ -54,6 +54,7 @@ void Sphere::draw(){
 }
 
 void Sphere::updatePosition(){
+    qDebug("updatePosition %f", direction.y());
     if(pos.y() >= -2.0f){
         if(direction.y() > -0.981f){
             direction -= QVector3D(0.0, 0.00981f, 0.0);
