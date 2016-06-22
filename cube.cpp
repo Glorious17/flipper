@@ -86,7 +86,7 @@ void Cube::draw(){
     glPopMatrix();
 }
 
-boolean Cube::checkIntersectionSphere(Sphere sphere){
+boolean Cube::checkIntersectionSphere(Sphere sphere, float& lamda){
 
     QVector3D spherePos = sphere.getPos();
 
@@ -97,13 +97,12 @@ boolean Cube::checkIntersectionSphere(Sphere sphere){
     QVector3D rechtsUnten = getGlobalCoordinatesOf(pos+QVector3D(width/2.0, -height/2.0, 0.0));
     QVector3D rechtsOben = getGlobalCoordinatesOf(pos+QVector3D(width/2.0, height/2.0, 0.0));
 
-    if((spherePos.x() > rechtsOben.x() && spherePos.x() > rechtsUnten.x()) ||
+    /*if((spherePos.x() > rechtsOben.x() && spherePos.x() > rechtsUnten.x()) ||
             (spherePos.x() < linksOben.x() && spherePos.x() < linksUnten.x()) ||
             (spherePos.y() > linksOben.y() && spherePos.y() > rechtsOben.y()) ||
             (spherePos.y() < linksUnten.y() && spherePos.y() < rechtsUnten.y())){
         return false;
-    }
-
+    }*/
     //TOP PLANE
 
     QVector3D x = getGlobalCoordinatesOf(QVector3D(pos.x(), pos.y()+(height/2.0), pos.z()));
@@ -115,12 +114,12 @@ boolean Cube::checkIntersectionSphere(Sphere sphere){
         return false;
     }
 
-    float distance = (QVector3D::dotProduct(xn, x - sphere.getPos())/skalarProdukt);
+    lamda = (QVector3D::dotProduct(xn, x - spherePos)/skalarProdukt);
 
-    if(distance <= 0){
+    if(lamda < 0){
         return false;
     }
-    qDebug("intersection %f", distance);
+    qDebug("intersection %f", sphere.getDirection().y());
     return true;
 }
 

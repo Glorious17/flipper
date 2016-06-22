@@ -39,7 +39,7 @@ private:
     Cube cube[nr_cubes];
     Sphere ball;
 
-    void checkCollision(Sphere sphere, Cube cube);
+    void checkCollision(Sphere &sphere, Cube cube);
     void changeZoom(float dzoom);
     void changeRotation(float dx, float dy);
     void changeTranslation(float dx, float dy);

@@ -15,7 +15,7 @@ public:
 
     void draw();
     QVector3D getGlobalCoordinatesOf(QVector3D local);
-    boolean checkIntersectionSphere(Sphere sphere);
+    boolean checkIntersectionSphere(Sphere sphere, float &lamda);
 
     //Setter
     void setColor(float red, float green, float blue);
