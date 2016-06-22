@@ -6,6 +6,7 @@
 #include "cube.h"
 
 int selectedCube = 0;
+bool rotationMode = false;
 
 QOGLWidget::QOGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 {
@@ -27,15 +28,14 @@ QOGLWidget::QOGLWidget(QWidget *parent) : QOpenGLWidget(parent)
     ball.setDirection(QVector3D(0.0, 0.5, 0.0));
 
     for(int i = 0; i < nr_cubes; i++){
-        cube[i] = Cube(QVector3D(0.0, 0.0, i*1.25), 4.0, 1.0, 1.0);
+        cube[i] = Cube(QVector3D((i-2)*4.25, 0.0, 0.0), 4.0, 1.0, 1.0);
         cube[i].setRotation(0.0, 0.0, 0.0);
         if(i == selectedCube){
             cube[i].setColor(0.0, 0.0, 1.0);
         }else{
-            cube[i].setColor(1.0, 0.0, 0.0);
+            cube[i].setColor(0.8, 0.2, 0.2);
         }
     }
-
 
     setFocusPolicy(Qt::ClickFocus);                                     //Muss aktiviert sein, damit das Widget Key Events annimmt (da KeyEvents Fokus benötigen)
     connect(timer_game, SIGNAL(timeout()), this, SLOT(gameUpdate()));   //Immer wenn der Timer tickt, wird das SIGNAL vom SLOT gameUpdate() aufgefangen
@@ -52,7 +52,7 @@ void QOGLWidget::gameUpdate(){
 }
 
 void QOGLWidget::checkCollision(Sphere sphere, Cube cube){
-    sphere.getDirection();
+    cube.checkIntersectionSphere(sphere);
 }
 
 void QOGLWidget::paintGL()
@@ -92,7 +92,6 @@ void QOGLWidget::paintGL()
     for(int i = 0; i < nr_cubes; i++){
         cube[i].draw();
     }
-
     ball.draw();
 
     glPopMatrix();
@@ -151,46 +150,32 @@ void QOGLWidget::keyPressEvent(QKeyEvent *event)
     switch(event->key()){
     case Qt::Key_Return:
         ball.setDirection(QVector3D(0.0, 0.5, 0.0));
-        if(selectedCube + 1 <= nr_cubes){
-            cube[selectedCube].setColor(1.0, 0.0, 0.0);
-            cube[selectedCube+1].setColor(0.0, 0.0, 1.0);
-            selectedCube++;
-            if(selectedCube == nr_cubes){
+
+        if(selectedCube < nr_cubes){
+            if(!rotationMode){
+                rotationMode = true;
+                cube[selectedCube].setColor(0.0, 1.0, 0.0);
+            }else{
+                rotationMode = false;
                 cube[selectedCube].setColor(1.0, 0.0, 0.0);
+                selectedCube++;
+                if(selectedCube < nr_cubes){
+                    cube[selectedCube].setColor(0.0, 0.0, 1.0);
+                }
             }
         }
         break;
     case Qt::Key_Right:
-        if(selectedCube >= nr_cubes){
-            xTran += 0.05;
-        }else{
-            QVector3D pos = cube[selectedCube].getPos();
-            cube[selectedCube].setPos(QVector3D(pos.x()+0.05, pos.y(), pos.z()));
-        }
+        xTran -= 0.05;
         break;
     case Qt::Key_Left:
-        if(selectedCube >= nr_cubes){
-            xTran -= 0.05;
-        }else{
-            QVector3D pos = cube[selectedCube].getPos();
-            cube[selectedCube].setPos(QVector3D(pos.x()-0.05, pos.y(), pos.z()));
-        }
+        xTran += 0.05;
         break;
     case Qt::Key_Up:
-        if(selectedCube >= nr_cubes){
-            yTran += 0.05;
-        }else{
-            QVector3D pos = cube[selectedCube].getPos();
-            cube[selectedCube].setPos(QVector3D(pos.x(), pos.y()+0.05, pos.z()));
-        }
+        yTran -= 0.05;
         break;
     case Qt::Key_Down:
-        if(selectedCube >= nr_cubes){
-            yTran -= 0.05;
-        }else{
-            QVector3D pos = cube[selectedCube].getPos();
-            cube[selectedCube].setPos(QVector3D(pos.x(), pos.y()-0.05, pos.z()));
-        }
+        yTran += 0.05;
         break;
     }
 }
@@ -207,7 +192,7 @@ void QOGLWidget::mouseMoveEvent(QMouseEvent *event)
     {
         float dx = 0;
         float dy = 0;
-        dx = (lastpos.y() - event->y()) * 0.3;
+        dx = (lastpos.y() - event->y()) * -0.3;
         dy = (lastpos.x() - event->x()) * 0.3;
 
         changeRotation(dx, dy);
@@ -217,15 +202,20 @@ void QOGLWidget::mouseMoveEvent(QMouseEvent *event)
     if(event->buttons() == Qt::RightButton)
     {
         float dx = 0;
-        float dz = 0;
+        float dy = 0;
         dx = ((lastpos.x() - event->x()) * 0.005) * (-1);
-        dz = ((lastpos.y() - event->y()) * 0.005) * (-1);
+        dy = ((lastpos.y() - event->y()) * 0.005) * (-1);
 
         if(selectedCube >= nr_cubes){
-            changeTranslation(dx, dz);
+            changeTranslation(dx, -dy);
         }else{
-            QVector3D pos = cube[selectedCube].getPos();
-            cube[selectedCube].setPos(QVector3D(pos.x()+dx, pos.y(), pos.z()+dz));
+            if(!rotationMode){
+                QVector3D pos = cube[selectedCube].getPos();
+                cube[selectedCube].setPos(QVector3D(pos.x()+dx, pos.y()-dy, pos.z()));
+            }else{
+                float cubeZRot = cube[selectedCube].getZRot();
+                cube[selectedCube].setRotation(0.0, 0.0, cubeZRot - (dx*50));
+            }
         }
     }
 
@@ -238,10 +228,10 @@ void QOGLWidget::wheelEvent(QWheelEvent *event)
     changeZoom(dzoom);
 }
 
-void QOGLWidget::changeTranslation(float dx, float dz)
+void QOGLWidget::changeTranslation(float dx, float dy)
 {
     xTran = xTran + dx;
-    zTran = zTran + dz;
+    yTran = yTran + dy;
 }
 
 void QOGLWidget::changeZoom(float dzoom)
