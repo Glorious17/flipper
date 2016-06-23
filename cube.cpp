@@ -10,8 +10,9 @@ Cube::Cube(QVector3D pos, float width, float height, float length)
     yRot = 0.0;
     zRot = 0.0;
 
-    matrix = QMatrix4x4();
-    matrix.translate(pos);
+    rotMatrix = QMatrix4x4();
+    tranMatrix = QMatrix4x4();
+    tranMatrix.translate(pos);
 
     red = 1.0;
     green = 1.0;
@@ -70,7 +71,7 @@ void Cube::draw(){
         {0.0, 1.0, 0.0}, //TOP
         {0.0, -1.0, 0.0} //BOTTOM
     };
-    //------------------------------------------------------------------6 PLANES, check collision auf allen 6 planes
+
     //erstellt alle 6 seiten eines Quaders
     glColor3f(red, green, blue);
     glBegin(GL_QUADS);
@@ -83,6 +84,11 @@ void Cube::draw(){
         }
     glEnd();
 
+    glBegin(GL_LINES);
+        glVertex3f(0.0, height/2.0, 0.0);
+        glVertex3f(normals[4][0], (height/2.0) + normals[4][1], normals[4][2]);
+    glEnd();
+
     glPopMatrix();
 }
 
@@ -90,23 +96,26 @@ boolean Cube::checkIntersectionSphere(Sphere sphere, float& lamda){
 
     QVector3D spherePos = sphere.getPos();
 
-    //checking bounding box
+    /*//checking bounding box
 
-    QVector3D linksUnten = getGlobalCoordinatesOf(pos-QVector3D(width/2.0, height/2.0, 0.0));
-    QVector3D linksOben = getGlobalCoordinatesOf(pos-QVector3D(width/2.0, -height/2.0, 0.0));
-    QVector3D rechtsUnten = getGlobalCoordinatesOf(pos+QVector3D(width/2.0, -height/2.0, 0.0));
-    QVector3D rechtsOben = getGlobalCoordinatesOf(pos+QVector3D(width/2.0, height/2.0, 0.0));
+    QVector3D linksUnten = getGlobalCoordinatesOfPoint(QVector3D(-width/2.0, -height/2.0, 0.0));
+    QVector3D linksOben = getGlobalCoordinatesOfPoint(QVector3D(-width/2.0, height/2.0, 0.0));
+    QVector3D rechtsUnten = getGlobalCoordinatesOfPoint(QVector3D(width/2.0, -height/2.0, 0.0));
+    QVector3D rechtsOben = getGlobalCoordinatesOfPoint(QVector3D(width/2.0, height/2.0, 0.0));
 
-    /*if((spherePos.x() > rechtsOben.x() && spherePos.x() > rechtsUnten.x()) ||
+    if((spherePos.x() > rechtsOben.x() && spherePos.x() > rechtsUnten.x()) ||
             (spherePos.x() < linksOben.x() && spherePos.x() < linksUnten.x()) ||
             (spherePos.y() > linksOben.y() && spherePos.y() > rechtsOben.y()) ||
             (spherePos.y() < linksUnten.y() && spherePos.y() < rechtsUnten.y())){
         return false;
-    }*/
+    }
+
+    qDebug("is in");*/
+
     //TOP PLANE
 
-    QVector3D x = getGlobalCoordinatesOf(QVector3D(pos.x(), pos.y()+(height/2.0), pos.z()));
-    QVector3D xn = getGlobalCoordinatesOf(QVector3D(0.0, 1.0, 0.0));
+    QVector3D x = getGlobalCoordinatesOfPoint(QVector3D(0.0, height/2.0, 0.0));
+    QVector3D xn = getGlobalCoordinatesOfVector(QVector3D(0.0, 1.0, 0.0));
 
     float skalarProdukt = QVector3D::dotProduct(sphere.getDirection(), xn);
 
@@ -119,12 +128,17 @@ boolean Cube::checkIntersectionSphere(Sphere sphere, float& lamda){
     if(lamda < 0){
         return false;
     }
-    qDebug("intersection %f", sphere.getDirection().y());
     return true;
 }
 
-QVector3D Cube::getGlobalCoordinatesOf(QVector3D local){
-    QVector3D global = matrix * (local-pos);
+QVector3D Cube::getGlobalCoordinatesOfPoint(QVector3D local){
+    QMatrix4x4 matrix = tranMatrix * rotMatrix;
+    QVector3D global = matrix * (local);
+    return global;
+}
+
+QVector3D Cube::getGlobalCoordinatesOfVector(QVector3D local){
+    QVector3D global = rotMatrix * (local);
     return global;
 }
 
@@ -138,7 +152,7 @@ void Cube::setColor(float red, float green, float blue){
 
 void Cube::setPos(QVector3D pos){
     QVector3D dPos = QVector3D(pos.x() - this->pos.x(), pos.y() - this->pos.y(), pos.z() - this->pos.z());
-    matrix.translate(dPos);
+    tranMatrix.translate(dPos);
 
     this->pos = pos;
 }
@@ -159,9 +173,9 @@ void Cube::setRotation(float xRot, float yRot, float zRot){
     float dxRot = xRot - this->xRot;
     float dyRot = yRot - this->yRot;
     float dzRot = zRot - this->zRot;
-    matrix.rotate(dxRot, 1.0, 0.0, 0.0);
-    matrix.rotate(dyRot, 0.0, 1.0, 0.0);
-    matrix.rotate(dzRot, 0.0, 0.0, 1.0);
+    rotMatrix.rotate(dxRot, 1.0, 0.0, 0.0);
+    rotMatrix.rotate(dyRot, 0.0, 1.0, 0.0);
+    rotMatrix.rotate(dzRot, 0.0, 0.0, 1.0);
 
     this->xRot = xRot;
     this->yRot = yRot;

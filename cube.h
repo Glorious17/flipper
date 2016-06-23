@@ -14,7 +14,8 @@ public:
     ~Cube();
 
     void draw();
-    QVector3D getGlobalCoordinatesOf(QVector3D local);
+    QVector3D getGlobalCoordinatesOfPoint(QVector3D local);
+    QVector3D getGlobalCoordinatesOfVector(QVector3D local);
     boolean checkIntersectionSphere(Sphere sphere, float &lamda);
 
     //Setter
@@ -43,7 +44,8 @@ private:
     float yRot;
     float zRot;
 
-    QMatrix4x4 matrix;
+    QMatrix4x4 rotMatrix;
+    QMatrix4x4 tranMatrix;
 
     //Color
     float red;

@@ -54,15 +54,24 @@ void Sphere::draw(){
 }
 
 void Sphere::updatePosition(){
-    qDebug("updatePosition %f", direction.y());
-    if(pos.y() >= -2.0f){
-        if(direction.y() > -0.981f){
-            direction -= QVector3D(0.0, 0.00981f, 0.0);
+    if(direction.length() >= 0.01){
+
+        if(pos.y() >= -2.0f){
+            if(direction.y() > -0.981f){
+                direction -= QVector3D(0.0, 0.00981f, 0.0);
+            }
+            if(pos.y() + direction.y() > -2.0){
+                pos += direction;
+            }else{
+                pos.setY(-2.0);
+            }
         }
-        pos += direction;
-    }else if(pos.y() < -2.0f){
-        pos.setY(-2.0f);
-        direction.setY(0.0f);
+    }else{
+        if(direction.y() > 0){
+            direction.setY(-0.011);
+        }else{
+            direction.setY(0.0f);
+        }
     }
 }
 
