@@ -20,7 +20,7 @@ QOGLWidget::QOGLWidget(QWidget *parent) : QOpenGLWidget(parent)
     scale = 1.0;
 
     timer_game = new QTimer(this);                              //Ein Spieltimer wird erstellt der in bestimmten intervallen das Spiel vorantreibt
-    timer_game->start(68);                                      //Timer soll alle 34 millisekunden auslösen (entspricht etwa 30 fps (17/1000 ~ 60fps))
+    timer_game->start(17);                                      //Timer soll alle 34 millisekunden auslösen (entspricht etwa 30 fps (17/1000 ~ 60fps))
 
 
     ball = Sphere(QVector3D(0.0, 4.0, 0.0), 0.5);               //Die Spielkugel wird erstellt
@@ -51,15 +51,13 @@ void QOGLWidget::gameUpdate(){
     update();
 }
 
-void QOGLWidget::checkCollision(Sphere &sphere, Cube cube){
+void QOGLWidget::checkCollision(Sphere& sphere, Cube cube){
     float lamda = 0;
     if(cube.checkIntersectionSphere(sphere, lamda)){
         if((sphere.getDirection() * lamda).length() <= sphere.getRadius()){
-            sphere.setDirection(QVector3D(0.0, 0.5, 0.0));
-            qDebug("is in");
+            sphere.setDirection(QVector3D(0.0, -sphere.getDirection().y(), 0.0));
         }
     }
-    qDebug("checkCollision: %f", sphere.getDirection().y());
 }
 
 void QOGLWidget::paintGL()
@@ -111,7 +109,7 @@ void QOGLWidget::initializeGL()
     initializeOpenGLFunctions();
 
     //Hintergrundfarbe wird gesetzt
-    glClearColor(0,0,0,1);
+    glClearColor(1,1,1,1);
 
     //Damit Transparenz gerendert werden kann
     glEnable(GL_BLEND);
