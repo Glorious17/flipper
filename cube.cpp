@@ -92,11 +92,11 @@ void Cube::draw(){
     glPopMatrix();
 }
 
-boolean Cube::checkIntersectionSphere(Sphere sphere, float& lamda){
+/*boolean Cube::checkIntersectionSphere(Sphere& sphere, float& lamda){
 
     QVector3D spherePos = sphere.getPos();
 
-    /*//checking bounding box
+    //checking bounding box
 
     QVector3D linksUnten = getGlobalCoordinatesOfPoint(QVector3D(-width/2.0, -height/2.0, 0.0));
     QVector3D linksOben = getGlobalCoordinatesOfPoint(QVector3D(-width/2.0, height/2.0, 0.0));
@@ -110,7 +110,7 @@ boolean Cube::checkIntersectionSphere(Sphere sphere, float& lamda){
         return false;
     }
 
-    qDebug("is in");*/
+    qDebug("is in");
 
     //TOP PLANE
 
@@ -129,7 +129,7 @@ boolean Cube::checkIntersectionSphere(Sphere sphere, float& lamda){
         return false;
     }
     return true;
-}
+}*/
 
 QVector3D Cube::getGlobalCoordinatesOfPoint(QVector3D local){
     QMatrix4x4 matrix = tranMatrix * rotMatrix;

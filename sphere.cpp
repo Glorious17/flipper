@@ -1,4 +1,5 @@
 #include "sphere.h"
+#include "cube.h"
 #include <cmath>
 
 Sphere::Sphere(QVector3D pos, float radius)
@@ -54,25 +55,48 @@ void Sphere::draw(){
 }
 
 void Sphere::updatePosition(){
-    if(direction.length() >= 0.01){
 
-        if(pos.y() >= -2.0f){
-            if(direction.y() > -0.981f){
-                direction -= QVector3D(0.0, 0.00981f, 0.0);
-            }
-            if(pos.y() + direction.y() > -2.0){
-                pos += direction;
-            }else{
-                pos.setY(-2.0);
-            }
-        }
-    }else{
-        if(direction.y() > 0){
-            direction.setY(-0.011);
-        }else{
-            direction.setY(0.0f);
-        }
+    if(direction.y() > -0.981f){
+        direction -= QVector3D(0.0, 0.00981f, 0.0);
     }
+    pos += direction;
+}
+
+bool Sphere::checkIntersection(Cube& cube, float& lamda){
+
+    /*//checking bounding box
+
+    QVector3D linksUnten = getGlobalCoordinatesOfPoint(QVector3D(-width/2.0, -height/2.0, 0.0));
+    QVector3D linksOben = getGlobalCoordinatesOfPoint(QVector3D(-width/2.0, height/2.0, 0.0));
+    QVector3D rechtsUnten = getGlobalCoordinatesOfPoint(QVector3D(width/2.0, -height/2.0, 0.0));
+    QVector3D rechtsOben = getGlobalCoordinatesOfPoint(QVector3D(width/2.0, height/2.0, 0.0));
+
+    if((spherePos.x() > rechtsOben.x() && spherePos.x() > rechtsUnten.x()) ||
+            (spherePos.x() < linksOben.x() && spherePos.x() < linksUnten.x()) ||
+            (spherePos.y() > linksOben.y() && spherePos.y() > rechtsOben.y()) ||
+            (spherePos.y() < linksUnten.y() && spherePos.y() < rechtsUnten.y())){
+        return false;
+    }
+
+    qDebug("is in");*/
+
+    //TOP PLANE
+
+    QVector3D x = cube.getGlobalCoordinatesOfPoint(QVector3D(0.0, cube.getHeight()/2.0 + radius, 0.0));
+    QVector3D xn = cube.getGlobalCoordinatesOfVector(QVector3D(0.0, 1.0, 0.0));
+
+    float skalarProdukt = QVector3D::dotProduct(direction, xn);
+
+    if(skalarProdukt == 0.0){               //Wenn das Skalaprodukt 0 ist, sind die Vektoren senkrecht zueinander
+        return false;
+    }
+
+    lamda = (QVector3D::dotProduct(xn, x - pos)/skalarProdukt);
+
+    if(lamda < 0){
+        return false;
+    }
+    return true;
 }
 
 //Setter---------------------------------------------------

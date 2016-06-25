@@ -3,6 +3,7 @@
 
 #include <QOpenGLFunctions>
 #include <QVector3D>
+#include "cube.h"
 
 class Sphere : protected QOpenGLFunctions
 {
@@ -12,6 +13,7 @@ public:
     ~Sphere();
 
     void draw();
+    bool checkIntersection(Cube &cube, float &lamda);
 
     //Setter
     void setColor(float red, float green, float blue);
