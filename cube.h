@@ -4,7 +4,6 @@
 #include <QOpenGLFunctions>
 #include <QVector3D>
 #include <QMatrix4x4>
-#include "sphere.h"
 
 class Cube : protected QOpenGLFunctions
 {
@@ -16,7 +15,6 @@ public:
     void draw();
     QVector3D getGlobalCoordinatesOfPoint(QVector3D local);
     QVector3D getGlobalCoordinatesOfVector(QVector3D local);
-    boolean checkIntersectionSphere(Sphere sphere, float &lamda);
 
     //Setter
     void setColor(float red, float green, float blue);

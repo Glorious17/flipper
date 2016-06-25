@@ -28,7 +28,7 @@ QOGLWidget::QOGLWidget(QWidget *parent) : QOpenGLWidget(parent)
     ball.setDirection(QVector3D(0.0, 0.5, 0.0));
 
     for(int i = 0; i < nr_cubes; i++){
-        cube[i] = Cube(QVector3D((i-2)*4.25, 0.0, 0.0), 4.0, 1.0, 1.0);
+        cube[i] = Cube(QVector3D((i)*4.25, 0.0, 0.0), 4.0, 1.0, 1.0);
         cube[i].setRotation(0.0, 0.0, 0.0);
         if(i == selectedCube){
             cube[i].setColor(0.0, 0.0, 1.0);
@@ -46,16 +46,39 @@ QOGLWidget::~QOGLWidget()
 }
 
 void QOGLWidget::gameUpdate(){
-    ball.updatePosition();
-    checkCollision(ball, cube[0]);
+
+    QVector3D ballNewVel = ball.getDirection();
+    if(ballNewVel.y() > -0.981f){
+        ballNewVel.setY(ballNewVel.y() - 0.00981f);
+    }
+    ball.setDirection(ballNewVel);
+
+    checkCollision(cube[0]);
+
     update();
 }
 
-void QOGLWidget::checkCollision(Sphere& sphere, Cube cube){
+void QOGLWidget::checkCollision(Cube& cube){
     float lamda = 0;
-    if(cube.checkIntersectionSphere(sphere, lamda)){
-        if((sphere.getDirection() * lamda).length() <= sphere.getRadius()){
-            sphere.setDirection(QVector3D(0.0, -sphere.getDirection().y(), 0.0));
+    QVector3D spherePos = ball.getPos();
+    QVector3D sphereVel = ball.getDirection();
+
+    bool isIntersecting = ball.checkIntersection(cube, lamda);
+    float distance_StartEnd = ((spherePos + sphereVel) - spherePos).length();
+    float distance_StartCol = ((spherePos + lamda*sphereVel) - spherePos).length();
+
+    ball.setPos(ball.getPos() + ball.getDirection());
+
+    if(isIntersecting){
+        if(distance_StartCol <= distance_StartEnd){
+            float lamda2 = 1 - lamda;
+            float geschwindigkeit = sphereVel.length();
+            QVector3D ballVelocityUnit = sphereVel.normalized();
+            QVector3D sphereNewVel = (2*(QVector3D::dotProduct(-ballVelocityUnit, cube.getGlobalCoordinatesOfVector(QVector3D(0.0, 1.0, 0.0)))) * cube.getGlobalCoordinatesOfVector(QVector3D(0.0, 1.0, 0.0)) + ballVelocityUnit);
+            sphereNewVel *= geschwindigkeit;
+            QVector3D sphereNewPos = intersectionPoint + lamda2*sphereNewVel;
+            ball.setPos(sphereNewPos);
+            ball.setDirection(sphereNewVel);
         }
     }
 }
