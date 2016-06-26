@@ -68,8 +68,16 @@ void Cube::draw(){
         {0.0, -1.0, 0.0} //BOTTOM
     };
 
-    //erstellt alle 6 seiten eines Quaders
+    if(red < redFade) red+=0.01;
+    if(green < greenFade) green+=0.01;
+    if(blue < blueFade) blue+=0.01;
+    if(red > redFade) red-=0.01;
+    if(green > greenFade) green-=0.01;
+    if(blue > blueFade) blue-=0.01;
+
     glColor3f(red, green, blue);
+
+    //erstellt alle 6 seiten eines Quaders
     glBegin(GL_QUADS);
         for(int i = 0; i < 6; i++){
             glNormal3f(normals[i][0], normals[i][1], normals[i][2]);
@@ -78,11 +86,6 @@ void Cube::draw(){
             glVertex3f(faces[i][2][0], faces[i][2][1], faces[i][2][2]);
             glVertex3f(faces[i][3][0], faces[i][3][1], faces[i][3][2]);
         }
-    glEnd();
-
-    glBegin(GL_LINES);
-        glVertex3f(0.0, height/2.0, 0.0);
-        glVertex3f(normals[4][0], (height/2.0) + normals[4][1], normals[4][2]);
     glEnd();
 
     glPopMatrix();
@@ -99,12 +102,21 @@ QVector3D Cube::getGlobalCoordinatesOfVector(QVector3D local){
     return global;
 }
 
+void Cube::fadeToColor(float redFade, float greenFade, float blueFade){
+    this->redFade = redFade;
+    this->greenFade = greenFade;
+    this->blueFade = blueFade;
+}
+
 //Setter---------------------------------------------------
 
 void Cube::setColor(float red, float green, float blue){
     this->red = red;
     this->green = green;
     this->blue = blue;
+    redFade = red;
+    greenFade = green;
+    blueFade = blue;
 }
 
 void Cube::setPos(QVector3D pos){
@@ -130,8 +142,33 @@ void Cube::setRotation(float xRot, float yRot, float zRot){
 
 //Getter---------------------------------------------------
 
+
+QVector3D Cube::getMin(){
+    return getGlobalCoordinatesOfPoint(QVector3D(-width/2.0, -height/2.0, -length/2.0));
+}
+
+QVector3D Cube::getMax(){
+    return getGlobalCoordinatesOfPoint(QVector3D(width/2.0, height/2.0, length/2.0));
+}
+
 QVector3D Cube::getPos(){
     return pos;
+}
+
+Plane Cube::getTopPlane(){
+    return Plane(getGlobalCoordinatesOfPoint(plane_top), getGlobalCoordinatesOfVector(QVector3D(0.0, 1.0, 0.0)), width);
+}
+
+Plane Cube::getBottomPlane(){
+    return Plane(getGlobalCoordinatesOfPoint(plane_bottom), getGlobalCoordinatesOfVector(QVector3D(0.0, -1.0, 0.0)), width);
+}
+
+Plane Cube::getRightPlane(){
+    return Plane(getGlobalCoordinatesOfPoint(plane_right), getGlobalCoordinatesOfVector(QVector3D(1.0, 0.0, 0.0)), height);
+}
+
+Plane Cube::getLeftPlane(){
+    return Plane(getGlobalCoordinatesOfPoint(plane_left), getGlobalCoordinatesOfVector(QVector3D(-1.0, 0.0, 0.0)), height);
 }
 
 QVector3D Cube::getTop(){
