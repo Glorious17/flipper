@@ -2,11 +2,12 @@
 #include "cube.h"
 #include <cmath>
 
-Sphere::Sphere(QVector3D pos, float radius)
+Sphere::Sphere(QVector3D pos, float radius, float kg)
 {
     this->pos = pos;
     this->direction = QVector3D(0.0, 0.0, 0.0);
     this->radius = radius;
+    this->kg = kg;
 
     red = 1.0;
     green = 1.0;
@@ -54,51 +55,6 @@ void Sphere::draw(){
     }
 }
 
-void Sphere::updatePosition(){
-
-    if(direction.y() > -0.981f){
-        direction -= QVector3D(0.0, 0.00981f, 0.0);
-    }
-    pos += direction;
-}
-
-bool Sphere::checkIntersection(Cube& cube, float& lamda){
-
-    /*//checking bounding box
-
-    QVector3D linksUnten = getGlobalCoordinatesOfPoint(QVector3D(-width/2.0, -height/2.0, 0.0));
-    QVector3D linksOben = getGlobalCoordinatesOfPoint(QVector3D(-width/2.0, height/2.0, 0.0));
-    QVector3D rechtsUnten = getGlobalCoordinatesOfPoint(QVector3D(width/2.0, -height/2.0, 0.0));
-    QVector3D rechtsOben = getGlobalCoordinatesOfPoint(QVector3D(width/2.0, height/2.0, 0.0));
-
-    if((spherePos.x() > rechtsOben.x() && spherePos.x() > rechtsUnten.x()) ||
-            (spherePos.x() < linksOben.x() && spherePos.x() < linksUnten.x()) ||
-            (spherePos.y() > linksOben.y() && spherePos.y() > rechtsOben.y()) ||
-            (spherePos.y() < linksUnten.y() && spherePos.y() < rechtsUnten.y())){
-        return false;
-    }
-
-    qDebug("is in");*/
-
-    //TOP PLANE
-
-    QVector3D x = cube.getGlobalCoordinatesOfPoint(QVector3D(0.0, cube.getHeight()/2.0 + radius, 0.0));
-    QVector3D xn = cube.getGlobalCoordinatesOfVector(QVector3D(0.0, 1.0, 0.0));
-
-    float skalarProdukt = QVector3D::dotProduct(direction, xn);
-
-    if(skalarProdukt == 0.0){               //Wenn das Skalaprodukt 0 ist, sind die Vektoren senkrecht zueinander
-        return false;
-    }
-
-    lamda = (QVector3D::dotProduct(xn, x - pos)/skalarProdukt);
-
-    if(lamda < 0){
-        return false;
-    }
-    return true;
-}
-
 //Setter---------------------------------------------------
 
 void Sphere::setColor(float red, float green, float blue){
@@ -119,6 +75,9 @@ void Sphere::setRadius(float radius){
     this->radius = radius;
 }
 
+void Sphere::setMass(float kg){
+    this->kg = kg;
+}
 
 //Getter---------------------------------------------------
 
@@ -134,7 +93,11 @@ float Sphere::getRadius(){
     return radius;
 }
 
+float Sphere::getMass(){
+    return kg;
+}
 
-
-
+float Sphere::getArea(){
+    return 4 * M_PI * pow(radius, 2);
+}
 

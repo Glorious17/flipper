@@ -8,30 +8,32 @@
 class Sphere : protected QOpenGLFunctions
 {
 public:
-    Sphere(QVector3D pos, float radius);
+    Sphere(QVector3D pos, float radius, float kg);
     Sphere();
     ~Sphere();
 
     void draw();
-    bool checkIntersection(Cube &cube, float &lamda);
 
     //Setter
     void setColor(float red, float green, float blue);
     void setPos(QVector3D pod);
     void setDirection(QVector3D direction);
-    void updatePosition();
     void setRadius(float radius);
+    void setMass(float mass);
 
     //Getter
     QVector3D getPos();
     QVector3D getDirection();
     float getRadius();
+    float getMass();
+    float getArea();
 
 private:
     //Sphere
     QVector3D pos;
     QVector3D direction;
     float radius;
+    float kg;
 
     //Color
     float red;

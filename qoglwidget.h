@@ -34,12 +34,14 @@ private:
 
     float scale;
 
-    const static int nr_cubes = 4;
+    static const int NR_CUBES = 2;
+    static constexpr float GRAVITY = 0.00981f;
 
-    Cube cube[nr_cubes];
+    Cube cube[NR_CUBES];
     Sphere ball;
 
-    void checkCollision(Cube &cube);
+    void checkCollision(Cube &cube, Sphere &sphere);
+    bool checkIntersection(QVector3D planePos, QVector3D planeNormal, QVector3D spherePos, QVector3D sphereDirection, float &lambda);
     void changeZoom(float dzoom);
     void changeRotation(float dx, float dy);
     void changeTranslation(float dx, float dy);
