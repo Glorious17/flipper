@@ -14,6 +14,13 @@ Cube::Cube(QVector3D pos, float width, float height, float length)
     tranMatrix = QMatrix4x4();
     tranMatrix.translate(pos);
 
+    plane_top = QVector3D(0.0, height/2.0, 0.0);
+    plane_bottom = QVector3D(0.0, -height/2.0, 0.0);
+    plane_right = QVector3D(width/2.0, 0.0, 0.0);
+    plane_left = QVector3D(-width/2.0, 0.0, 0.0);
+    plane_front = QVector3D(0.0, 0.0, length/2.0);
+    plane_back = QVector3D(0.0, 0.0, -length/2.0);
+
     red = 1.0;
     green = 1.0;
     blue = 1.0;
@@ -51,17 +58,6 @@ void Cube::draw(){
         {{x, y, z}, {x, y, z-length}, {x-width, y, z-length}, {x-width, y, z}} // BOTTOM
     };
 
-    /*
-    //Wenn jede seite des Cubes eine andere Farbe haben soll
-    float colors[6][3] = {
-        {0.6, 0.6, 0.6}, //FRONT
-        {1.0, 0.0, 0.0}, //BACK
-        {0.0, 0.0, 1.0}, //RIGHT
-        {0.0, 1.0, 0.0}, //LEFT
-        {0.0, 1.0, 1.0}, //TOP
-        {1.0, 1.0, 1.0} //BOTTOM
-    };*/
-
     //Setzt für jede Seite einen Normalvektor
     float normals[6][3] = {
         {0.0, 0.0, 1.0}, //FRONT
@@ -92,45 +88,6 @@ void Cube::draw(){
     glPopMatrix();
 }
 
-/*boolean Cube::checkIntersectionSphere(Sphere& sphere, float& lamda){
-
-    QVector3D spherePos = sphere.getPos();
-
-    //checking bounding box
-
-    QVector3D linksUnten = getGlobalCoordinatesOfPoint(QVector3D(-width/2.0, -height/2.0, 0.0));
-    QVector3D linksOben = getGlobalCoordinatesOfPoint(QVector3D(-width/2.0, height/2.0, 0.0));
-    QVector3D rechtsUnten = getGlobalCoordinatesOfPoint(QVector3D(width/2.0, -height/2.0, 0.0));
-    QVector3D rechtsOben = getGlobalCoordinatesOfPoint(QVector3D(width/2.0, height/2.0, 0.0));
-
-    if((spherePos.x() > rechtsOben.x() && spherePos.x() > rechtsUnten.x()) ||
-            (spherePos.x() < linksOben.x() && spherePos.x() < linksUnten.x()) ||
-            (spherePos.y() > linksOben.y() && spherePos.y() > rechtsOben.y()) ||
-            (spherePos.y() < linksUnten.y() && spherePos.y() < rechtsUnten.y())){
-        return false;
-    }
-
-    qDebug("is in");
-
-    //TOP PLANE
-
-    QVector3D x = getGlobalCoordinatesOfPoint(QVector3D(0.0, height/2.0, 0.0));
-    QVector3D xn = getGlobalCoordinatesOfVector(QVector3D(0.0, 1.0, 0.0));
-
-    float skalarProdukt = QVector3D::dotProduct(sphere.getDirection(), xn);
-
-    if(skalarProdukt == 0.0){               //Wenn das Skalaprodukt 0 ist, sind die Vektoren senkrecht zueinander
-        return false;
-    }
-
-    lamda = (QVector3D::dotProduct(xn, x - spherePos)/skalarProdukt);
-
-    if(lamda < 0){
-        return false;
-    }
-    return true;
-}*/
-
 QVector3D Cube::getGlobalCoordinatesOfPoint(QVector3D local){
     QMatrix4x4 matrix = tranMatrix * rotMatrix;
     QVector3D global = matrix * (local);
@@ -157,18 +114,6 @@ void Cube::setPos(QVector3D pos){
     this->pos = pos;
 }
 
-void Cube::setWidth(float width){
-    this->width = width;
-}
-
-void Cube::setHeight(float height){
-    this->height = height;
-}
-
-void Cube::setLength(float length){
-    this->length = length;
-}
-
 void Cube::setRotation(float xRot, float yRot, float zRot){
     float dxRot = xRot - this->xRot;
     float dyRot = yRot - this->yRot;
@@ -187,6 +132,30 @@ void Cube::setRotation(float xRot, float yRot, float zRot){
 
 QVector3D Cube::getPos(){
     return pos;
+}
+
+QVector3D Cube::getTop(){
+    return plane_top;
+}
+
+QVector3D Cube::getBottom(){
+    return plane_bottom;
+}
+
+QVector3D Cube::getRight(){
+    return plane_right;
+}
+
+QVector3D Cube::getLeft(){
+    return plane_left;
+}
+
+QVector3D Cube::getFront(){
+    return plane_front;
+}
+
+QVector3D Cube::getBack(){
+    return plane_back;
 }
 
 float Cube::getWidth(){
