@@ -4,6 +4,7 @@
 #include <QOpenGLFunctions>
 #include <QVector3D>
 #include <QMatrix4x4>
+#include "plane.h"
 
 class Cube : protected QOpenGLFunctions
 {
@@ -15,6 +16,7 @@ public:
     void draw();
     QVector3D getGlobalCoordinatesOfPoint(QVector3D local);
     QVector3D getGlobalCoordinatesOfVector(QVector3D local);
+    void fadeToColor(float redFade, float greenFade, float blueFade);
 
     //Setter
     void setColor(float red, float green, float blue);
@@ -28,6 +30,12 @@ public:
     float getLength();
     float getXRot();
     float getZRot();
+    Plane getTopPlane();
+    Plane getBottomPlane();
+    Plane getRightPlane();
+    Plane getLeftPlane();
+    QVector3D getMin();
+    QVector3D getMax();
     QVector3D getTop();
     QVector3D getBottom();
     QVector3D getRight();
@@ -60,7 +68,9 @@ private:
     float green;
     float blue;
 
-
+    float redFade;
+    float greenFade;
+    float blueFade;
 };
 
 #endif // CUBE_H

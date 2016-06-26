@@ -20,13 +20,13 @@ SOURCES += main.cpp\
     cube.cpp \
     cylinder.cpp \
     sphere.cpp \
-    geoobject.cpp
+    plane.cpp
 
 HEADERS  += mainwindow.h \
     qoglwidget.h \
     cube.h \
     cylinder.h \
     sphere.h \
-    geoobject.h
+    plane.h
 
 FORMS    += mainwindow.ui
