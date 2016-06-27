@@ -2,6 +2,8 @@
 #include "cube.h"
 #include <cmath>
 
+bool fading = false;
+
 Sphere::Sphere(QVector3D pos, float radius, float kg)
 {
     this->pos = pos;

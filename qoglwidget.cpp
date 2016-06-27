@@ -87,7 +87,7 @@ void QOGLWidget::gameUpdate(){
             float geschwindigkeit = ball.getDirection().length();
             QVector3D ballVelocityUnit = ball.getDirection().normalized();
             QVector3D sphereNewVelocity;
-            if(geschwindigkeit <= 0.04){
+            if(geschwindigkeit <= 0.04 && collision_normal != QVector3D(0.0, 1.0, 0.0)){
                 sphereNewVelocity = QVector3D(0.0, 0.0, 0.0);
             }else{
                 sphereNewVelocity = (2*(QVector3D::dotProduct(-ballVelocityUnit, collision_normal)) * collision_normal + ballVelocityUnit);
@@ -132,7 +132,7 @@ bool QOGLWidget::checkCollision(Cube& cube, Sphere& sphere, QVector3D& collision
                 collision_point = sphereOldPosition + lambdaToCollision * sphereOldVelocity;
 
                 if(isPointInCubePlane(collision_point, planes[i])){
-                    collision_normal = normal;
+                    collision_normal = planes[i].getNormal();
                     lambda = (1 - (distance_StartCol / distance_StartEnd))*lambda;
                     return true;
                 }
@@ -143,10 +143,21 @@ bool QOGLWidget::checkCollision(Cube& cube, Sphere& sphere, QVector3D& collision
     return false;
 }
 
-bool QOGLWidget::isPointInCubePlane(QVector3D point, Plane plane){
-    if(point.distanceToPoint(plane.getPos()) > (plane.getLength()/2.0)+ball.getRadius()){
-        return false;
+bool QOGLWidget::isPointInCubePlane(QVector3D point, Plane &plane){
+    float distance_point_plane = point.distanceToPoint(plane.getPos());
+
+    if(distance_point_plane > plane.getLength()/2.0){   //prüft ob der Punkt außerhalb der bounds der plane ist
+        if( distance_point_plane > (plane.getLength()/2.0)+(ball.getRadius())){
+            return false;
+        }
+        //radius - delta vom überstieg = neuer normalen vektor (normieren nicht vergessen)
+        QVector3D planeToPoint = point - plane.getPos();
+        QVector3D planeToEnd = plane.getPos() + (ball.getRadius() + plane.getLength()/2.0) * planeToPoint.normalized();
+        QVector3D newNormal = (planeToPoint + plane.getNormal()).normalized();
+
+        plane.setNormal(newNormal);
     }
+
     return true;
 }
 
