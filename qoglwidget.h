@@ -46,6 +46,7 @@ private:
 
     bool checkCollision(Cube &cube, Sphere &sphere, QVector3D &collision_point, QVector3D &collision_normal, float &lambda);
     bool checkIntersection(QVector3D planePos, QVector3D planeNormal, QVector3D spherePos, QVector3D sphereDirection, float &lambda);
+    bool checkIntersection(Cylinder cylinder, QVector3D spherePos, QVector3D sphereDirection, float radius, float &lambda);
     bool isPointInCubePlane(QVector3D point, Plane plane);
     void changeZoom(float dzoom);
     void changeRotation(float dx, float dy);

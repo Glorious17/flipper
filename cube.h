@@ -34,14 +34,6 @@ public:
     Plane getBottomPlane();
     Plane getRightPlane();
     Plane getLeftPlane();
-    QVector3D getMin();
-    QVector3D getMax();
-    QVector3D getTop();
-    QVector3D getBottom();
-    QVector3D getRight();
-    QVector3D getLeft();
-    QVector3D getFront();
-    QVector3D getBack();
 
 private:
     //Cube

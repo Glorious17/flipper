@@ -3,6 +3,7 @@
 
 #include <QOpenGLFunctions>
 #include <QVector3D>
+#include <QMatrix4x4>
 
 class Cylinder : protected QOpenGLFunctions
 {
@@ -12,12 +13,14 @@ public:
     ~Cylinder();
 
     void draw();
+    QVector3D getGlobalCoordinatesOfPoint(QVector3D local);
+    QVector3D getGlobalCoordinatesOfVector(QVector3D local);
+    void fadeToColor(float redFade, float greenFade, float blueFade);
 
     //Setter
     void setColor(float red, float green, float blue);
     void setPos(QVector3D pos);
-    void setHeight(float height);
-    void setRadius(float radius);
+    void setRotation(float xRot, float yRot, float zRot);
 
     //Getter
     QVector3D getPos();
@@ -27,14 +30,24 @@ public:
 private:
     //Cylinder
     QVector3D pos;
+    QVector3D axis;
+    float xRot;
+    float yRot;
+    float zRot;
     float radius;
     float height;
+
+    QMatrix4x4 rotMatrix;
+    QMatrix4x4 tranMatrix;
 
     //color
     float red;
     float green;
     float blue;
 
+    float redFade;
+    float greenFade;
+    float blueFade;
 };
 
 #endif // CYLINDER_H
