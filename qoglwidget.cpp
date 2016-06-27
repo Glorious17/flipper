@@ -167,6 +167,12 @@ bool QOGLWidget::checkIntersection(QVector3D plane_pos, QVector3D plane_normal, 
     return true;
 }
 
+bool QOGLWidget::checkIntersection(Cylinder cylinder, QVector3D spherePos, QVector3D sphereDirection, float radius, float &lambda){
+    float d = spherePos.distanceToLine(cylinder.getPos(), cylinder.getGlobalCoordinatesOfVector(QVector3D(0.0, 1.0, 0.0)));
+
+
+}
+
 void QOGLWidget::paintGL()
 {
     //Szene wird resetet
@@ -187,7 +193,7 @@ void QOGLWidget::paintGL()
     //DRAW EVERYTHING----------------------------
     glPushMatrix();
 
-    //Ein Bunter Boden wird erstellt
+    /*//Ein Bunter Boden wird erstellt
     glBegin(GL_POLYGON);
     glNormal3f(0.0, 1.0, 0.0);
     for(int i = 0; i < 45; i++){
@@ -199,7 +205,7 @@ void QOGLWidget::paintGL()
         glColor3f(1.0/i, (1.0/45.0) * i, 0.5);
         glVertex3f(x, y, z);
     }
-    glEnd();
+    glEnd();*/
 
     for(int i = 0; i < NR_CUBES; i++){
         cube[i].draw();

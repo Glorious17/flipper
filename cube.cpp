@@ -142,15 +142,6 @@ void Cube::setRotation(float xRot, float yRot, float zRot){
 
 //Getter---------------------------------------------------
 
-
-QVector3D Cube::getMin(){
-    return getGlobalCoordinatesOfPoint(QVector3D(-width/2.0, -height/2.0, -length/2.0));
-}
-
-QVector3D Cube::getMax(){
-    return getGlobalCoordinatesOfPoint(QVector3D(width/2.0, height/2.0, length/2.0));
-}
-
 QVector3D Cube::getPos(){
     return pos;
 }
@@ -169,30 +160,6 @@ Plane Cube::getRightPlane(){
 
 Plane Cube::getLeftPlane(){
     return Plane(getGlobalCoordinatesOfPoint(plane_left), getGlobalCoordinatesOfVector(QVector3D(-1.0, 0.0, 0.0)), height);
-}
-
-QVector3D Cube::getTop(){
-    return plane_top;
-}
-
-QVector3D Cube::getBottom(){
-    return plane_bottom;
-}
-
-QVector3D Cube::getRight(){
-    return plane_right;
-}
-
-QVector3D Cube::getLeft(){
-    return plane_left;
-}
-
-QVector3D Cube::getFront(){
-    return plane_front;
-}
-
-QVector3D Cube::getBack(){
-    return plane_back;
 }
 
 float Cube::getWidth(){
