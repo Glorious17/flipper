@@ -69,7 +69,7 @@ void Cylinder::draw(){
 
     float xn;
     float zn;
-    glColor4f(red, green, blue, 0.6);
+    //glColor4f(red, green, blue, 0.6);
     //Cylinder Sides
     glBegin(GL_QUAD_STRIP);
     for(int i = 0; i <= strips; i++){

@@ -24,15 +24,19 @@ QOGLWidget::QOGLWidget(QWidget *parent) : QOpenGLWidget(parent)
     timer_game->start(10);                                      //Timer soll alle 34 millisekunden auslösen (entspricht etwa 30 fps (17/1000 ~ 60fps))
 
 
-    ball = Sphere(QVector3D(0.0, 15.0, 0.0), 0.5, 0.5);               //Die Spielkugel wird erstellt
+    ball = Sphere(QVector3D(0.0, 15.0, 0.0), 0.5, 0.05);               //Die Spielkugel wird erstellt
     ball.setColor(0.2, 1.0, 0.8);
     ball.setDirection(QVector3D(0.0, 0.0, 0.0));
 
-    goal = Cylinder(QVector3D(0.0, -7.0, 0.0), 1.5, 3);
+    goal = Cube(QVector3D(0.0, -7.0, 0.0), 2, 5.0, 5.0);
     goal.setColor(0.7, 0.2, 0.7);
 
-    obstacle = Cube(QVector3D(0.0, 0.0, 0.0), 9, 6, 1.1);
+    obstacle = Cube(QVector3D(0.0, 0.0, 0.0), 20, 3, 1.1);
     obstacle.setColor(0.3, 0.3, 0.3);
+
+    cylinder = Cylinder(QVector3D(0.0, 10.0, 0.0), 2, 1);
+    cylinder.setColor(0.7, 0.4, 0.2);
+    cylinder.setRotation(90, 0, 0);
 
     for(int i = 0; i < NR_CUBES; i++){
         cube[i] = Cube(QVector3D((i-2)*4.25, 6.0, 0.0), 4.0, 1.0, 1.0);
@@ -69,12 +73,12 @@ void QOGLWidget::gameUpdate(){
                 float geschwindigkeit = ball.getDirection().length();
                 QVector3D ballVelocityUnit = ball.getDirection().normalized();
                 QVector3D sphereNewVelocity;
-                if(geschwindigkeit <= 0.04){
-                    sphereNewVelocity = QVector3D(0.0, 0.0, 0.0);
-                }else{
+                //if(geschwindigkeit <= 0.04){
+                    //sphereNewVelocity = QVector3D(0.0, 0.0, 0.0);
+                //}else{
                     sphereNewVelocity = (2*(QVector3D::dotProduct(-ballVelocityUnit, collision_normal)) * collision_normal + ballVelocityUnit);
                     sphereNewVelocity = sphereNewVelocity * geschwindigkeit;
-                }
+                //}
                 sphere_newPosition = collision_point + lambda * sphereNewVelocity;
                 ball.setDirection(sphereNewVelocity);
                 cube[i].setColor(1, 0.7, 0.5);
@@ -97,9 +101,39 @@ void QOGLWidget::gameUpdate(){
             ball.setDirection(sphereNewVelocity);
         }
 
+        if(checkCollision(cylinder, ball, collision_normal, lambda)){
+            cylinder.setColor(1.0, 0.0, 0.0);
+
+            float v = ball.getDirection().length();
+            QVector3D u1 = QVector3D(collision_normal * QVector3D::dotProduct(collision_normal));
+
+            QVector3D ballVelUnit = ball.getDirection().normalized();
+            ball.setDirection(-ballVelUnit*collision_normal);
+            ball.setPos(ball.getPos() + v*ball.getDirection());
+        }
+
         ball.setPos(sphere_newPosition);
     }
     update();
+}
+
+bool QOGLWidget::checkCollision(Cylinder& cylinder, Sphere& sphere, QVector3D& normal, float& lambda){
+
+    float dx = -2*sphere.getPos().x()*cylinder.getPos().x() + sphere.getPos().x()*sphere.getPos().x() + cylinder.getPos().x()*cylinder.getPos().x();
+    float dy = -2*sphere.getPos().y()*cylinder.getPos().y() + sphere.getPos().y()*sphere.getPos().y() + cylinder.getPos().y()*cylinder.getPos().y();
+
+
+
+    if(dx + dy <= (pow(cylinder.getRadius() + sphere.getRadius(), 2))){
+        normal = (sphere.getPos() - cylinder.getPos()).normalized();
+
+        return true;
+    }
+    return false;
+}
+
+bool QOGLWidget::checkIntersection(Cylinder cylinder, QVector3D spherePos, QVector3D sphereDirection, float radius, float &lambda){
+    float d = spherePos.distanceToLine(cylinder.getPos(), cylinder.getGlobalCoordinatesOfVector(QVector3D(0.0, 1.0, 0.0)));
 }
 
 bool QOGLWidget::checkCollision(Cube& cube, Sphere& sphere, QVector3D& collision_point, QVector3D& collision_normal, float& lambda){ //könnte hiermit zusammenhängen
@@ -146,15 +180,17 @@ bool QOGLWidget::checkCollision(Cube& cube, Sphere& sphere, QVector3D& collision
 bool QOGLWidget::isPointInCubePlane(QVector3D point, Plane &plane){
     float distance_point_plane = point.distanceToPoint(plane.getPos());
 
-    if(distance_point_plane > plane.getLength()/2.0){   //prüft ob der Punkt außerhalb der bounds der plane ist
+    if(distance_point_plane >= plane.getLength()/2.0){   //prüft ob der Punkt außerhalb der bounds der plane ist
         if( distance_point_plane > (plane.getLength()/2.0)+(ball.getRadius())){
             return false;
         }
         //radius - delta vom überstieg = neuer normalen vektor (normieren nicht vergessen)
         QVector3D planeToPoint = point - plane.getPos();
-        QVector3D planeToEnd = plane.getPos() + (ball.getRadius() + plane.getLength()/2.0) * planeToPoint.normalized();
-        QVector3D newNormal = (planeToPoint + plane.getNormal()).normalized();
+        QVector3D planeToEnd;
+        planeToEnd = (plane.getPos() + (ball.getRadius() + plane.getLength()/2.0) * planeToPoint.normalized()) - plane.getPos();
+        QVector3D newNormal = ((planeToEnd - planeToPoint) + plane.getNormal()).normalized();
 
+        qDebug("collided normal: x: %f, y: %f", plane.getNormal().x(), plane.getNormal().y());
         plane.setNormal(newNormal);
     }
 
@@ -176,12 +212,6 @@ bool QOGLWidget::checkIntersection(QVector3D plane_pos, QVector3D plane_normal, 
     }
 
     return true;
-}
-
-bool QOGLWidget::checkIntersection(Cylinder cylinder, QVector3D spherePos, QVector3D sphereDirection, float radius, float &lambda){
-    float d = spherePos.distanceToLine(cylinder.getPos(), cylinder.getGlobalCoordinatesOfVector(QVector3D(0.0, 1.0, 0.0)));
-
-
 }
 
 void QOGLWidget::paintGL()
@@ -224,6 +254,7 @@ void QOGLWidget::paintGL()
     obstacle.draw();
     ball.draw();
     goal.draw();
+    cylinder.draw();
 
     glPopMatrix();
     //----------------------------DRAW EVERYTHING
