@@ -37,14 +37,16 @@ private:
 
     static const int NR_CUBES = 5;
     static constexpr float GRAVITY = 0.00981f;
-    static constexpr float REIBUNGSKONSTANTE = 0.1;
+    static constexpr float REIBUNGSKONSTANTE = 0.06;
 
     Cube cube[NR_CUBES];
     Cube obstacle;
     Sphere ball;
-    Cylinder goal;
+    Cube goal;
+    Cylinder cylinder;
 
     bool checkCollision(Cube &cube, Sphere &sphere, QVector3D &collision_point, QVector3D &collision_normal, float &lambda);
+    bool checkCollision(Cylinder& cylinder, Sphere& sphere, QVector3D& normal, float &lambda);
     bool checkIntersection(QVector3D planePos, QVector3D planeNormal, QVector3D spherePos, QVector3D sphereDirection, float &lambda);
     bool checkIntersection(Cylinder cylinder, QVector3D spherePos, QVector3D sphereDirection, float radius, float &lambda);
     bool isPointInCubePlane(QVector3D point, Plane &plane);
