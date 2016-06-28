@@ -35,6 +35,14 @@ void Sphere::draw(){
     float hor_delta = (2.0f * M_PI)/float(latitudes);  //delta_theta
     float ver_delta = (M_PI)/float(longtitudes);       //delta_phi
 
+    if(red < redFade) red+=0.01;
+    if(green < greenFade) green+=0.01;
+    if(blue < blueFade) blue+=0.01;
+    if(red > redFade) red-=0.01;
+    if(green > greenFade) green-=0.01;
+    if(blue > blueFade) blue-=0.01;
+
+
     glColor3f(red, green, blue);
     for(float i = 0.0; i < 1.0f * M_PI; i += ver_delta){
         glBegin(GL_QUAD_STRIP);
@@ -57,12 +65,21 @@ void Sphere::draw(){
     }
 }
 
+void Sphere::fadeToColor(float redFade, float greenFade, float blueFade){
+    this->redFade = redFade;
+    this->greenFade = greenFade;
+    this->blueFade = blueFade;
+}
+
 //Setter---------------------------------------------------
 
 void Sphere::setColor(float red, float green, float blue){
     this->red = red;
     this->green = green;
     this->blue = blue;
+    redFade = red;
+    greenFade = green;
+    blueFade = blue;
 }
 
 void Sphere::setPos(QVector3D pos){

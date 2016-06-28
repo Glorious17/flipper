@@ -13,6 +13,7 @@ public:
     ~Sphere();
 
     void draw();
+    void fadeToColor(float redFade, float greenFade, float blueFade);
 
     //Setter
     void setColor(float red, float green, float blue);
@@ -39,6 +40,9 @@ private:
     float red;
     float green;
     float blue;
+    float redFade;
+    float greenFade;
+    float blueFade;
 };
 
 #endif // SPHERE_H
