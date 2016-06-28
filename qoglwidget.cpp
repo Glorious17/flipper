@@ -6,6 +6,7 @@
 #include "cube.h"
 
 int selectedCube = 0;
+bool selectionMode = true;
 bool cylinderSet = true;
 bool rotationMode = false;
 bool gameStarted = false;
@@ -14,6 +15,23 @@ static float REIBUNGSKONSTANTE = 0.03;
 
 QOGLWidget::QOGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 {
+    initialize();
+
+    timer_game = new QTimer(this);                              //Ein Spieltimer wird erstellt der in bestimmten intervallen das Spiel vorantreibt
+    timer_game->start(10);                                      //Timer soll alle 34 millisekunden auslösen (entspricht etwa 30 fps (17/1000 ~ 60fps))
+
+    setFocusPolicy(Qt::ClickFocus);                                     //Muss aktiviert sein, damit das Widget Key Events annimmt (da KeyEvents Fokus benötigen)
+    connect(timer_game, SIGNAL(timeout()), this, SLOT(gameUpdate()));   //Immer wenn der Timer tickt, wird das SIGNAL vom SLOT gameUpdate() aufgefangen
+
+}
+
+void QOGLWidget::initialize(){
+    selectionMode = true;
+    selectedCube = 0;
+    cylinderSet = true;
+    rotationMode = false;
+    gameStarted = false;
+
     xRot = 25;
     yRot = 0.0; //-25.0
 
@@ -22,10 +40,6 @@ QOGLWidget::QOGLWidget(QWidget *parent) : QOpenGLWidget(parent)
     zTran = 0.0;
 
     scale = 0.5;
-
-    timer_game = new QTimer(this);                              //Ein Spieltimer wird erstellt der in bestimmten intervallen das Spiel vorantreibt
-    timer_game->start(10);                                      //Timer soll alle 34 millisekunden auslösen (entspricht etwa 30 fps (17/1000 ~ 60fps))
-
 
     ball = Sphere(QVector3D(0.0, 15.0, 0.0), 0.5, 0.5);               //Die Spielkugel wird erstellt
     ball.setColor(0.2, 1.0, 0.8);
@@ -46,9 +60,6 @@ QOGLWidget::QOGLWidget(QWidget *parent) : QOpenGLWidget(parent)
         cube[i].setRotation(0.0, 0.0, 0.0);
         cube[i].setColor(0.7, 0.4, 0.2);
     }
-
-    setFocusPolicy(Qt::ClickFocus);                                     //Muss aktiviert sein, damit das Widget Key Events annimmt (da KeyEvents Fokus benötigen)
-    connect(timer_game, SIGNAL(timeout()), this, SLOT(gameUpdate()));   //Immer wenn der Timer tickt, wird das SIGNAL vom SLOT gameUpdate() aufgefangen
 }
 
 QOGLWidget::~QOGLWidget()
@@ -81,6 +92,7 @@ void QOGLWidget::gameUpdate(){
                     }
                     ball.fadeToColor(1.0, 0.0, 0.0);
                     goal.fadeToColor(1.0, 0.0, 0.0);
+
                     gameStarted = false;
                     return;
                 }else{
@@ -334,6 +346,10 @@ void QOGLWidget::keyPressEvent(QKeyEvent *event)
             cube[0].fadeToColor(1.0, 1.0, 1.0);
             return;
         }
+        if(selectionMode == false && gameStarted == false){
+            initialize();
+            return;
+        }
         if(selectedCube < NR_CUBES){
             if(!rotationMode){
                 rotationMode = true;
@@ -346,6 +362,7 @@ void QOGLWidget::keyPressEvent(QKeyEvent *event)
                     cube[selectedCube].fadeToColor(1.0, 1.0, 1.0);
                 }else{
                     if(!cylinderSet){
+                        selectionMode = false;
                         gameStarted = true;
                     }
                 }
@@ -363,6 +380,9 @@ void QOGLWidget::keyPressEvent(QKeyEvent *event)
         break;
     case Qt::Key_Down:
         yTran += 0.1;
+        break;
+    case Qt::Key_Escape:
+        initialize();
         break;
     }
 }
@@ -390,8 +410,8 @@ void QOGLWidget::mouseMoveEvent(QMouseEvent *event)
     {
         float dx = 0;
         float dy = 0;
-        dx = ((lastpos.x() - event->x()) * 0.05) * (-1);
-        dy = ((lastpos.y() - event->y()) * 0.05) * (-1);
+        dx = ((lastpos.x() - event->x()) * 0.03) * (-1);
+        dy = ((lastpos.y() - event->y()) * 0.03) * (-1);
 
         if(selectedCube >= NR_CUBES){
             changeTranslation(dx, -dy);
