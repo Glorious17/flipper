@@ -25,7 +25,9 @@ QOGLWidget::QOGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 
 }
 
+//initialisiert alle werte auf einen anfangswert, diese Methode kann später zum neustart verwendet werden
 void QOGLWidget::initialize(){
+
     selectionMode = true;
     selectedCube = 0;
     cylinderSet = true;
@@ -141,6 +143,7 @@ void QOGLWidget::gameUpdate(){
     update();
 }
 
+//Prüft die Collision zwischen Zylinder und Kugel und gibt den normalenvektor am collisionspunkt zurück
 bool QOGLWidget::checkCollision(Cylinder& cylinder, Sphere& sphere, QVector3D& normal){
 
     float dx = -2*sphere.getPos().x()*cylinder.getPos().x() + sphere.getPos().x()*sphere.getPos().x() + cylinder.getPos().x()*cylinder.getPos().x();
@@ -156,6 +159,7 @@ bool QOGLWidget::checkCollision(Cylinder& cylinder, Sphere& sphere, QVector3D& n
     return false;
 }
 
+//Prüft collision zwischen Cube und Kugel, gibt daraufhin den kollisions punkt und kollisions normale und das zugehörige Lambda zurück
 bool QOGLWidget::checkCollision(Cube& cube, Sphere& sphere, QVector3D& collision_point, QVector3D& collision_normal, float& lambda){ //könnte hiermit zusammenhängen
 
     QVector3D sphereOldPosition = sphere.getPos();
@@ -197,6 +201,7 @@ bool QOGLWidget::checkCollision(Cube& cube, Sphere& sphere, QVector3D& collision
     return false;
 }
 
+//prüft ob der kollisionspunkt auf der ebene liegt, wenn eine kollision an der kante vorliegt, verändert er den normalen vektor
 bool QOGLWidget::isPointInCubePlane(QVector3D point, Plane &plane){
     float distance_point_plane = point.distanceToPoint(plane.getPos());
 
@@ -210,13 +215,13 @@ bool QOGLWidget::isPointInCubePlane(QVector3D point, Plane &plane){
         planeToEnd = (plane.getPos() + (ball.getRadius() + plane.getLength()/2.0) * planeToPoint.normalized()) - plane.getPos();
         QVector3D newNormal = ((planeToEnd - planeToPoint) + plane.getNormal()).normalized();
 
-        qDebug("collided normal: x: %f, y: %f", plane.getNormal().x(), plane.getNormal().y());
         plane.setNormal(newNormal);
     }
 
     return true;
 }
 
+//Prüft ob eine Ebene mit einer geraden kollidiert
 bool QOGLWidget::checkIntersection(QVector3D plane_pos, QVector3D plane_normal, QVector3D sphere_pos, QVector3D sphere_direction, float &lambda){
 
     float skalarProdukt = QVector3D::dotProduct(sphere_direction, plane_normal);
@@ -239,6 +244,7 @@ bool QOGLWidget::checkIntersection(QVector3D plane_pos, QVector3D plane_normal, 
     return true;
 }
 
+//zeichnet die szene
 void QOGLWidget::paintGL()
 {
     //Szene wird resetet
@@ -289,6 +295,7 @@ void QOGLWidget::paintGL()
     //----------------------------DRAW EVERYTHING
 }
 
+//initialisiert die szene
 void QOGLWidget::initializeGL()
 {
     //OpenGL Funktionen werden geladen und initialisiert
@@ -327,6 +334,7 @@ void QOGLWidget::initializeGL()
     glEnable(GL_COLOR_MATERIAL);                                //Das Farbmaterial wird aktiviert
 }
 
+//wenn das Fenster in der größe verändert wird wird der folgende code ausgeführt
 void QOGLWidget::resizeGL(int w, int h)
 {
     glViewport(0, 0, w, h);
@@ -336,6 +344,7 @@ void QOGLWidget::resizeGL(int w, int h)
     glLoadIdentity();
 }
 
+//Listener für ein KeyPressEvent
 void QOGLWidget::keyPressEvent(QKeyEvent *event)
 {
     switch(event->key()){
@@ -387,11 +396,13 @@ void QOGLWidget::keyPressEvent(QKeyEvent *event)
     }
 }
 
+//Listener wenn die Maus gedrückt wird
 void QOGLWidget::mousePressEvent(QMouseEvent *event)
 {
     lastpos = event->pos();
 }
 
+//Listener wenn die maus bewegt wird
 void QOGLWidget::mouseMoveEvent(QMouseEvent *event)
 {
     // Left button: Rotating around x and y axis
@@ -434,18 +445,21 @@ void QOGLWidget::mouseMoveEvent(QMouseEvent *event)
     lastpos = event->pos();                 //Die aktuelle Mauszeiger Position wird gespeichert
 }
 
+//wenn gescrollt wird
 void QOGLWidget::wheelEvent(QWheelEvent *event)
 {
     float dzoom = event->angleDelta().ry() *0.0005;
     changeZoom(dzoom);
 }
 
+//verändert die position des Koodinatensystems
 void QOGLWidget::changeTranslation(float dx, float dy)
 {
     xTran = xTran + dx;
     yTran = yTran + dy;
 }
 
+//verändert die scale
 void QOGLWidget::changeZoom(float dzoom)
 {
     scale = scale + dzoom;
@@ -456,6 +470,7 @@ void QOGLWidget::changeZoom(float dzoom)
     }
 }
 
+//verändert die Rotation der szene
 void QOGLWidget::changeRotation(float dx, float dy)
 {
     if(yRot+dy < -90){
