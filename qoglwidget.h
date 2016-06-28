@@ -36,8 +36,6 @@ private:
     float scale;
 
     static const int NR_CUBES = 5;
-    static constexpr float GRAVITY = 0.00981f;
-    static constexpr float REIBUNGSKONSTANTE = 0.1;
 
     Cube cube[NR_CUBES];
     Cube obstacle;
