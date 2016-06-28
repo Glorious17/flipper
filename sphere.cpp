@@ -32,8 +32,8 @@ void Sphere::draw(){
 
     //https://de.wikipedia.org/wiki/Kugel
 
-    float hor_delta = (2.0f * M_PI)/float(latitudes);  //delta_theta
-    float ver_delta = (M_PI)/float(longtitudes);       //delta_phi
+    float hor_delta = (2.0f * M_PI)/float(latitudes);  //delta_theta = hor_delta
+    float ver_delta = (M_PI)/float(longtitudes);       //delta_phi = ver_delta
 
     if(red < redFade) red+=0.01;
     if(green < greenFade) green+=0.01;
@@ -65,7 +65,7 @@ void Sphere::draw(){
     }
 }
 
-void Sphere::fadeToColor(float redFade, float greenFade, float blueFade){
+void Sphere::fadeToColor(float redFade, float greenFade, float blueFade){ //Für einen schönen Farbübergang
     this->redFade = redFade;
     this->greenFade = greenFade;
     this->blueFade = blueFade;
