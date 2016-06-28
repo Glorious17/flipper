@@ -10,7 +10,7 @@ LIBS    += -lOpengl32
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = CG_Projekt
+TARGET = PUZZLE 3D
 TEMPLATE = app
 
 
