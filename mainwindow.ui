@@ -45,11 +45,8 @@
     <addaction name="actionHallo"/>
     <addaction name="actionDas"/>
     <addaction name="actionK_nnte"/>
-    <addaction name="actionWird"/>
-    <addaction name="actionNe"/>
-    <addaction name="action1_0"/>
     <addaction name="separator"/>
-    <addaction name="actionEz"/>
+    <addaction name="actionViel_Erfolg"/>
    </widget>
    <widget class="QMenu" name="menuTest2">
     <property name="title">
@@ -63,17 +60,17 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionHallo">
    <property name="text">
-    <string>hallo</string>
+    <string>Altrock, Jens | 399144</string>
    </property>
   </action>
   <action name="actionDas">
    <property name="text">
-    <string>das</string>
+    <string>Berlik, Pascal | 357221</string>
    </property>
   </action>
   <action name="actionK_nnte">
    <property name="text">
-    <string>cg projekt</string>
+    <string>Spatz, Janusz | 399341</string>
    </property>
   </action>
   <action name="actionWird">
@@ -102,6 +99,11 @@
   <action name="actionAnleitung">
    <property name="text">
     <string>Anleitung</string>
+   </property>
+  </action>
+  <action name="actionViel_Erfolg">
+   <property name="text">
+    <string>Viel Erfolg!</string>
    </property>
   </action>
  </widget>

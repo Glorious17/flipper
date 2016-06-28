@@ -50,6 +50,7 @@ private:
     void changeZoom(float dzoom);
     void changeRotation(float dx, float dy);
     void changeTranslation(float dx, float dy);
+    void initialize();
 
 protected:
     void initializeGL();
