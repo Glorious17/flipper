@@ -113,11 +113,19 @@ void QOGLWidget::gameUpdate(){
             float geschwindigkeit = ball.getDirection().length();
             QVector3D ballVelocityUnit = ball.getDirection().normalized();
             QVector3D sphereNewVelocity;
-            if(geschwindigkeit <= 0.04 && collision_normal != QVector3D(0.0, 1.0, 0.0)){
+            if(geschwindigkeit <= 0.01){
                 sphereNewVelocity = QVector3D(0.0, 0.0, 0.0);
+                for(int j = 0; j < NR_CUBES; j++){
+                    cube[j].fadeToColor(0.3, 0.3, 0.3);
+                }
+                ball.fadeToColor(1.0, 0.0, 0.0);
+                goal.fadeToColor(1.0, 0.0, 0.0);
+
+                gameStarted = false;
+                return;
             }else{
                 sphereNewVelocity = (2*(QVector3D::dotProduct(-ballVelocityUnit, collision_normal)) * collision_normal + ballVelocityUnit);
-                sphereNewVelocity = sphereNewVelocity * geschwindigkeit;
+                sphereNewVelocity = sphereNewVelocity * geschwindigkeit * obstacle.getElastic();
             }
             sphere_newPosition = collision_point + lambda * sphereNewVelocity;
             ball.setDirection(sphereNewVelocity);
