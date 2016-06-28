@@ -43,7 +43,7 @@ void Cylinder::draw(){
 
     glColor3f(red, green, blue);
 
-    /*//Clyinder Top
+    //Clyinder Top
     glBegin(GL_POLYGON);
     glNormal3f(0.0, 1.0, 0.0);
     for(int i = 0; i < strips; i++){
@@ -53,7 +53,7 @@ void Cylinder::draw(){
         z = radius * sinf(step);
         glVertex3f(x, y, z);
     }
-    glEnd();*/
+    glEnd();
 
     //Cylinder Bottom
     glBegin(GL_POLYGON);

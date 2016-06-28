@@ -6,6 +6,7 @@
 #include "cube.h"
 
 int selectedCube = 0;
+bool cylinderSet = true;
 bool rotationMode = false;
 bool gameStarted = false;
 
@@ -24,27 +25,24 @@ QOGLWidget::QOGLWidget(QWidget *parent) : QOpenGLWidget(parent)
     timer_game->start(10);                                      //Timer soll alle 34 millisekunden auslösen (entspricht etwa 30 fps (17/1000 ~ 60fps))
 
 
-    ball = Sphere(QVector3D(0.0, 15.0, 0.0), 0.5, 0.05);               //Die Spielkugel wird erstellt
+    ball = Sphere(QVector3D(0.0, 15.0, 0.0), 0.5, 0.5);               //Die Spielkugel wird erstellt
     ball.setColor(0.2, 1.0, 0.8);
     ball.setDirection(QVector3D(0.0, 0.0, 0.0));
 
-    goal = Cube(QVector3D(0.0, -7.0, 0.0), 2, 5.0, 5.0);
+    goal = Cube(QVector3D(0.0, -7.0, 0.0), 2, 5.0, 1.5);
     goal.setColor(0.7, 0.2, 0.7);
 
     obstacle = Cube(QVector3D(0.0, 0.0, 0.0), 20, 3, 1.1);
     obstacle.setColor(0.3, 0.3, 0.3);
 
     cylinder = Cylinder(QVector3D(0.0, 10.0, 0.0), 2, 1);
-    cylinder.setColor(0.7, 0.4, 0.2);
+    cylinder.setColor(0.3, 0.3, 0.3);
     cylinder.setRotation(90, 0, 0);
 
     for(int i = 0; i < NR_CUBES; i++){
         cube[i] = Cube(QVector3D((i-2)*4.25, 6.0, 0.0), 4.0, 1.0, 1.0);
         cube[i].setRotation(0.0, 0.0, 0.0);
         cube[i].setColor(0.7, 0.4, 0.2);
-        if(i == selectedCube){
-            cube[i].setColor(1.0, 1.0, 1.0);
-        }
     }
 
     setFocusPolicy(Qt::ClickFocus);                                     //Muss aktiviert sein, damit das Widget Key Events annimmt (da KeyEvents Fokus benötigen)
@@ -101,15 +99,19 @@ void QOGLWidget::gameUpdate(){
             ball.setDirection(sphereNewVelocity);
         }
 
-        if(checkCollision(cylinder, ball, collision_normal, lambda)){
-            cylinder.setColor(1.0, 0.0, 0.0);
+        if(checkCollision(cylinder, ball, collision_normal)){
+            double p = 2 * (QVector3D::dotProduct(ball.getDirection(), collision_normal)) / ball.getMass();
+            ball.setDirection(ball.getDirection() - p * ball.getMass()* collision_normal);
+            sphere_newPosition = (ball.getPos() + ball.getDirection());
+        }
 
-            float v = ball.getDirection().length();
-            QVector3D u1 = QVector3D(collision_normal * QVector3D::dotProduct(collision_normal));
-
-            QVector3D ballVelUnit = ball.getDirection().normalized();
-            ball.setDirection(-ballVelUnit*collision_normal);
-            ball.setPos(ball.getPos() + v*ball.getDirection());
+        if(checkCollision(goal, ball, collision_point, collision_normal, lambda)){
+            for(int i = 0; i < NR_CUBES; i++){
+                cube[i].fadeToColor(0.3, 0.3, 0.3);
+            }
+            ball.fadeToColor(0.0, 1.0, 0.0);
+            goal.fadeToColor(0.0, 1.0, 0.0);
+            gameStarted = false;
         }
 
         ball.setPos(sphere_newPosition);
@@ -117,7 +119,7 @@ void QOGLWidget::gameUpdate(){
     update();
 }
 
-bool QOGLWidget::checkCollision(Cylinder& cylinder, Sphere& sphere, QVector3D& normal, float& lambda){
+bool QOGLWidget::checkCollision(Cylinder& cylinder, Sphere& sphere, QVector3D& normal){
 
     float dx = -2*sphere.getPos().x()*cylinder.getPos().x() + sphere.getPos().x()*sphere.getPos().x() + cylinder.getPos().x()*cylinder.getPos().x();
     float dy = -2*sphere.getPos().y()*cylinder.getPos().y() + sphere.getPos().y()*sphere.getPos().y() + cylinder.getPos().y()*cylinder.getPos().y();
@@ -130,10 +132,6 @@ bool QOGLWidget::checkCollision(Cylinder& cylinder, Sphere& sphere, QVector3D& n
         return true;
     }
     return false;
-}
-
-bool QOGLWidget::checkIntersection(Cylinder cylinder, QVector3D spherePos, QVector3D sphereDirection, float radius, float &lambda){
-    float d = spherePos.distanceToLine(cylinder.getPos(), cylinder.getGlobalCoordinatesOfVector(QVector3D(0.0, 1.0, 0.0)));
 }
 
 bool QOGLWidget::checkCollision(Cube& cube, Sphere& sphere, QVector3D& collision_point, QVector3D& collision_normal, float& lambda){ //könnte hiermit zusammenhängen
@@ -252,6 +250,10 @@ void QOGLWidget::paintGL()
         cube[i].draw();
     }
     obstacle.draw();
+    if(gameStarted){
+        QVector3D ballpos = ball.getPos();
+        ball.fadeToColor(0.5 + ballpos.x()/18, 0.5 + ballpos.y()/18, ballpos.x()/ballpos.y());
+    }
     ball.draw();
     goal.draw();
     cylinder.draw();
@@ -312,7 +314,11 @@ void QOGLWidget::keyPressEvent(QKeyEvent *event)
     switch(event->key()){
     case Qt::Key_Return:
         ball.setPos(QVector3D(0.0, 15.0, 0.0));
-
+        if(cylinderSet){
+            cylinderSet = false;
+            cube[0].fadeToColor(1.0, 1.0, 1.0);
+            return;
+        }
         if(selectedCube < NR_CUBES){
             if(!rotationMode){
                 rotationMode = true;
@@ -324,7 +330,9 @@ void QOGLWidget::keyPressEvent(QKeyEvent *event)
                 if(selectedCube < NR_CUBES){
                     cube[selectedCube].fadeToColor(1.0, 1.0, 1.0);
                 }else{
-                    gameStarted = true;
+                    if(!cylinderSet){
+                        gameStarted = true;
+                    }
                 }
             }
         }
@@ -373,12 +381,17 @@ void QOGLWidget::mouseMoveEvent(QMouseEvent *event)
         if(selectedCube >= NR_CUBES){
             changeTranslation(dx, -dy);
         }else{
-            if(!rotationMode){
-                QVector3D pos = cube[selectedCube].getPos();
-                cube[selectedCube].setPos(QVector3D(pos.x()+dx, pos.y()-dy, pos.z()));
+            if(cylinderSet){
+                QVector3D pos = cylinder.getPos();
+                cylinder.setPos(QVector3D(pos.x()+dx, pos.y()-dy, pos.z()));
             }else{
-                float cubeZRot = cube[selectedCube].getZRot();
-                cube[selectedCube].setRotation(0.0, 0.0, cubeZRot - (dx*50));
+                if(!rotationMode){
+                    QVector3D pos = cube[selectedCube].getPos();
+                    cube[selectedCube].setPos(QVector3D(pos.x()+dx, pos.y()-dy, pos.z()));
+                }else{
+                    float cubeZRot = cube[selectedCube].getZRot();
+                    cube[selectedCube].setRotation(0.0, 0.0, cubeZRot - (dx*50));
+                }
             }
         }
     }
