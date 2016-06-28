@@ -25,6 +25,7 @@ public:
 
     //Getter
     QVector3D getPos();
+    float getElastic();
     float getWidth();
     float getHeight();
     float getLength();
@@ -44,6 +45,8 @@ private:
     float xRot;
     float yRot;
     float zRot;
+
+    float elastic;
 
     QVector3D plane_top;
     QVector3D plane_bottom;

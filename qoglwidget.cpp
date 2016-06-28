@@ -10,7 +10,7 @@ bool cylinderSet = true;
 bool rotationMode = false;
 bool gameStarted = false;
 static float GRAVITY = 0.00981f;
-static float REIBUNGSKONSTANTE = 0.1;
+static float REIBUNGSKONSTANTE = 0.03;
 
 QOGLWidget::QOGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 {
@@ -32,7 +32,7 @@ QOGLWidget::QOGLWidget(QWidget *parent) : QOpenGLWidget(parent)
     ball.setDirection(QVector3D(0.0, 0.0, 0.0));
 
     goal = Cube(QVector3D(0.0, -7.0, 0.0), 2, 5.0, 1.5);
-    goal.setColor(0.7, 0.2, 0.7);
+    goal.setColor(0.0, 0.0, 1.0);
 
     obstacle = Cube(QVector3D(0.0, 0.0, 0.0), 20, 3, 1.1);
     obstacle.setColor(0.3, 0.3, 0.3);
@@ -74,12 +74,19 @@ void QOGLWidget::gameUpdate(){
                 float geschwindigkeit = ball.getDirection().length();
                 QVector3D ballVelocityUnit = ball.getDirection().normalized();
                 QVector3D sphereNewVelocity;
-                //if(geschwindigkeit <= 0.04){
-                    //sphereNewVelocity = QVector3D(0.0, 0.0, 0.0);
-                //}else{
+                if(geschwindigkeit <= 0.01){
+                    sphereNewVelocity = QVector3D(0.0, 0.0, 0.0);
+                    for(int j = 0; j < NR_CUBES; j++){
+                        cube[j].fadeToColor(0.3, 0.3, 0.3);
+                    }
+                    ball.fadeToColor(1.0, 0.0, 0.0);
+                    goal.fadeToColor(1.0, 0.0, 0.0);
+                    gameStarted = false;
+                    return;
+                }else{
                     sphereNewVelocity = (2*(QVector3D::dotProduct(-ballVelocityUnit, collision_normal)) * collision_normal + ballVelocityUnit);
-                    sphereNewVelocity = sphereNewVelocity * geschwindigkeit;
-                //}
+                    sphereNewVelocity = sphereNewVelocity * geschwindigkeit * cube[i].getElastic();
+                }
                 sphere_newPosition = collision_point + lambda * sphereNewVelocity;
                 ball.setDirection(sphereNewVelocity);
                 cube[i].setColor(1, 0.7, 0.5);
@@ -383,8 +390,8 @@ void QOGLWidget::mouseMoveEvent(QMouseEvent *event)
     {
         float dx = 0;
         float dy = 0;
-        dx = ((lastpos.x() - event->x()) * 0.005) * (-1);
-        dy = ((lastpos.y() - event->y()) * 0.005) * (-1);
+        dx = ((lastpos.x() - event->x()) * 0.05) * (-1);
+        dy = ((lastpos.y() - event->y()) * 0.05) * (-1);
 
         if(selectedCube >= NR_CUBES){
             changeTranslation(dx, -dy);

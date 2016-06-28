@@ -10,6 +10,8 @@ Cube::Cube(QVector3D pos, float width, float height, float length)
     yRot = 0.0;
     zRot = 0.0;
 
+    elastic = 0.9;
+
     rotMatrix = QMatrix4x4();
     tranMatrix = QMatrix4x4();
     tranMatrix.translate(pos);
@@ -141,6 +143,10 @@ void Cube::setRotation(float xRot, float yRot, float zRot){
 }
 
 //Getter---------------------------------------------------
+
+float Cube::getElastic(){
+    return elastic;
+}
 
 QVector3D Cube::getPos(){
     return pos;
