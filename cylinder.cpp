@@ -43,7 +43,7 @@ void Cylinder::draw(){
 
     glColor3f(red, green, blue);
 
-    //Clyinder Top
+    //Clyinder Top-------------------------------
     glBegin(GL_POLYGON);
     glNormal3f(0.0, 1.0, 0.0);
     for(int i = 0; i < strips; i++){
@@ -54,8 +54,9 @@ void Cylinder::draw(){
         glVertex3f(x, y, z);
     }
     glEnd();
+    //-------------------------------Clyinder Top
 
-    //Cylinder Bottom
+    //Cylinder Bottom----------------------------
     glBegin(GL_POLYGON);
     glNormal3f(0.0, -1.0, 0.0);
     for(int i = 0; i < strips; i++){
@@ -66,11 +67,12 @@ void Cylinder::draw(){
         glVertex3f(x, y, z);
     }
     glEnd();
+    //----------------------------Cylinder Bottom
 
     float xn;
     float zn;
-    //glColor4f(red, green, blue, 0.6);
-    //Cylinder Sides
+
+    //Cylinder Sides-----------------------------
     glBegin(GL_QUAD_STRIP);
     for(int i = 0; i <= strips; i++){
 
@@ -88,6 +90,7 @@ void Cylinder::draw(){
         glVertex3f(x, -(height/2.0), z);
     }
     glEnd();
+    //-----------------------------Cylinder Sides
 
     glPopMatrix();
 }

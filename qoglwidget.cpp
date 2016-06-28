@@ -47,17 +47,17 @@ void QOGLWidget::initialize(){
     ball.setColor(0.2, 1.0, 0.8);
     ball.setDirection(QVector3D(0.0, 0.0, 0.0));
 
-    goal = Cube(QVector3D(0.0, -7.0, 0.0), 2, 2.0, 1.5);
+    goal = Cube(QVector3D(0.0, -7.0, 0.0), 2, 2.0, 1.5);                //Das Zielrechteck wird erstellt
     goal.setColor(0.0, 0.0, 1.0);
 
-    obstacle = Cube(QVector3D(0.0, 0.0, 0.0), 20, 3, 1.1);
+    obstacle = Cube(QVector3D(0.0, 0.0, 0.0), 20, 3, 1.1);              //ein unbewegliches Hinderniss wird erstellt
     obstacle.setColor(0.3, 0.3, 0.3);
 
-    cylinder = Cylinder(QVector3D(0.0, 10.0, 0.0), 2, 1);
+    cylinder = Cylinder(QVector3D(0.01, 10.0, 0.0), 2, 1);              //Ein Zylinder wird erstellt
     cylinder.setColor(0.3, 0.3, 0.3);
     cylinder.setRotation(90, 0, 0);
 
-    for(int i = 0; i < NR_CUBES; i++){
+    for(int i = 0; i < NR_CUBES; i++){                                  //Alle beweglichen Rechtecke werden erstellt
         cube[i] = Cube(QVector3D((i-2)*4.25, 6.0, 0.0), 4.0, 1.0, 1.0);
         cube[i].setRotation(0.0, 0.0, 0.0);
         cube[i].setColor(0.7, 0.4, 0.2);
@@ -68,7 +68,7 @@ QOGLWidget::~QOGLWidget()
 {
 }
 
-//Die Metode dient zur physikalischen berechnung der Collision
+//Die Metode dient zur physikalischen berechnung der Collision und behandlung einer collision
 void QOGLWidget::gameUpdate(){
 
     if(gameStarted){
@@ -158,7 +158,7 @@ bool QOGLWidget::checkCollision(Cylinder& cylinder, Sphere& sphere, QVector3D& n
     float dy = -2*sphere.getPos().y()*cylinder.getPos().y() + sphere.getPos().y()*sphere.getPos().y() + cylinder.getPos().y()*cylinder.getPos().y();
 
 
-
+    //Liegt der neue Punkt im Zylinder?
     if(dx + dy <= (pow(cylinder.getRadius() + sphere.getRadius(), 2))){
         normal = (sphere.getPos() - cylinder.getPos()).normalized();
 
@@ -175,6 +175,7 @@ bool QOGLWidget::checkCollision(Cube& cube, Sphere& sphere, QVector3D& collision
     float radius = sphere.getRadius();
     Plane planes[4];
 
+    //Alle seiten des Rechtecks werden in variablen gespeichert
     planes[0] = cube.getTopPlane();
     planes[0].setPos(planes[0].getPos() + radius * planes[0].getNormal());
     planes[1] = cube.getBottomPlane();
@@ -184,6 +185,7 @@ bool QOGLWidget::checkCollision(Cube& cube, Sphere& sphere, QVector3D& collision
     planes[3] = cube.getLeftPlane();
     planes[3].setPos(planes[3].getPos() + radius * planes[3].getNormal());
 
+    //Jede Seite wird auf collision geprüft
     for(int i = 0; i < 4; i++){
         QVector3D plane = planes[i].getPos();
         QVector3D normal = planes[i].getNormal();
@@ -213,7 +215,7 @@ bool QOGLWidget::checkCollision(Cube& cube, Sphere& sphere, QVector3D& collision
 bool QOGLWidget::isPointInCubePlane(QVector3D point, Plane &plane){
     float distance_point_plane = point.distanceToPoint(plane.getPos());
 
-    if(distance_point_plane >= plane.getLength()/2.0){   //prüft ob der Punkt außerhalb der bounds der plane ist
+    if(distance_point_plane >= plane.getLength()/2.0){   //prüft ob der Punkt außerhalb des rechtecks ist, aber trotzdem eine collision vorhanden ist
         if( distance_point_plane > (plane.getLength()/2.0)+(ball.getRadius())){
             return false;
         }
@@ -234,11 +236,11 @@ bool QOGLWidget::checkIntersection(QVector3D plane_pos, QVector3D plane_normal, 
 
     float skalarProdukt = QVector3D::dotProduct(sphere_direction, plane_normal);
 
-    if(skalarProdukt == 0.0){               //Wenn das Skalaprodukt 0 ist, sind die Vektoren senkrecht zueinander
+    if(skalarProdukt == 0.0){               //Wenn das Skalaprodukt 0 ist, sind die Vektoren senkrecht zueinander und es gibt keine collision
         return false;
     }
 
-    lambda = (QVector3D::dotProduct(plane_normal, plane_pos - sphere_pos)/skalarProdukt);
+    lambda = (QVector3D::dotProduct(plane_normal, plane_pos - sphere_pos)/skalarProdukt); //wo trifft die Gerade die Ebene?
 
 
     if((sphere_pos+sphere_direction).distanceToPlane(plane_pos, plane_normal) > 0){
@@ -293,7 +295,7 @@ void QOGLWidget::paintGL()
     obstacle.draw();
     if(gameStarted){
         QVector3D ballpos = ball.getPos();
-        ball.fadeToColor(0.5 + ballpos.x()/18, 0.5 + ballpos.y()/18, ballpos.x()/ballpos.y());
+        ball.fadeToColor(0.5 + fabs(ballpos.x()/18), 0.5 + fabs(ballpos.y()/18), ballpos.x()/ballpos.y());
     }
     ball.draw();
     goal.draw();
