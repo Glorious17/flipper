@@ -45,7 +45,7 @@ void QOGLWidget::initialize(){
     ball.setColor(0.2, 1.0, 0.8);
     ball.setDirection(QVector3D(0.0, 0.0, 0.0));
 
-    goal = Cube(QVector3D(0.0, -7.0, 0.0), 2, 5.0, 1.5);
+    goal = Cube(QVector3D(0.0, -7.0, 0.0), 2, 2.0, 1.5);
     goal.setColor(0.0, 0.0, 1.0);
 
     obstacle = Cube(QVector3D(0.0, 0.0, 0.0), 20, 3, 1.1);
