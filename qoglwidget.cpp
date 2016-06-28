@@ -9,8 +9,8 @@ int selectedCube = 0;
 bool cylinderSet = true;
 bool rotationMode = false;
 bool gameStarted = false;
-static constexpr float GRAVITY = 0.00981f;
-static constexpr float REIBUNGSKONSTANTE = 0.1;
+static float GRAVITY = 0.00981f;
+static float REIBUNGSKONSTANTE = 0.1;
 
 QOGLWidget::QOGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 {
