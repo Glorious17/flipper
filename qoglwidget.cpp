@@ -9,6 +9,8 @@ int selectedCube = 0;
 bool cylinderSet = true;
 bool rotationMode = false;
 bool gameStarted = false;
+static constexpr float GRAVITY = 0.00981f;
+static constexpr float REIBUNGSKONSTANTE = 0.1;
 
 QOGLWidget::QOGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 {
@@ -53,6 +55,7 @@ QOGLWidget::~QOGLWidget()
 {
 }
 
+//Die Metode dient zur physikalischen berechnung der Collision
 void QOGLWidget::gameUpdate(){
 
     if(gameStarted){
@@ -204,6 +207,11 @@ bool QOGLWidget::checkIntersection(QVector3D plane_pos, QVector3D plane_normal, 
     }
 
     lambda = (QVector3D::dotProduct(plane_normal, plane_pos - sphere_pos)/skalarProdukt);
+
+
+    if((sphere_pos+sphere_direction).distanceToPlane(plane_pos, plane_normal) > 0){
+        return false;
+    }
 
     if(lambda < 0){                         //Wenn Lambda < 0 ist dann fliegt die Kugel nicht richtung ebene
         return false;
