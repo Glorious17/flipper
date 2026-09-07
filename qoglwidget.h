@@ -2,7 +2,7 @@
 #define QOGLWIDGET_H
 
 #include <QOpenGLWidget>
-#include <QOpenGLFunctions>
+#include <QOpenGLFunctions_2_1>
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QVector3D>
@@ -13,7 +13,7 @@
 #include "sphere.h"
 #include "plane.h"
 
-class QOGLWidget : public QOpenGLWidget, protected QOpenGLFunctions
+class QOGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_2_1
 {
     Q_OBJECT
 

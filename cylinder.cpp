@@ -1,6 +1,10 @@
 #include "cylinder.h"
 #include <cmath>
 
+namespace {
+constexpr float PI = 3.14159265358979323846f;
+}
+
 Cylinder::Cylinder(QVector3D pos, float radius, float height)
 {
     this->pos = pos;
@@ -25,6 +29,8 @@ Cylinder::~Cylinder(){}
 
 void Cylinder::draw(){
 
+    initializeOpenGLFunctions();
+
     glPushMatrix();
 
     glTranslatef(pos.x(), pos.y(), pos.z());
@@ -35,7 +41,7 @@ void Cylinder::draw(){
 
     int strips = 45; //wie viele "ecken" soll der zylinder haben
 
-    float delta = (2.0f * M_PI)/strips;
+    float delta = (2.0f * PI)/strips;
     float step;
     float x;
     float y;
@@ -157,7 +163,6 @@ float Cylinder::getHeight(){
 float Cylinder::getRadius(){
     return radius;
 }
-
 
 
 

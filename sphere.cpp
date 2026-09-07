@@ -2,6 +2,10 @@
 #include "cube.h"
 #include <cmath>
 
+namespace {
+constexpr float PI = 3.14159265358979323846f;
+}
+
 bool fading = false;
 
 Sphere::Sphere(QVector3D pos, float radius, float kg)
@@ -26,14 +30,16 @@ Sphere::~Sphere()
 
 void Sphere::draw(){
 
+    initializeOpenGLFunctions();
+
 
     int latitudes = 90;         //breitengrade = horizontal
     int longtitudes = 90;       //längengrade = vertikal
 
     //https://de.wikipedia.org/wiki/Kugel
 
-    float hor_delta = (2.0f * M_PI)/float(latitudes);  //delta_theta = hor_delta
-    float ver_delta = (M_PI)/float(longtitudes);       //delta_phi = ver_delta
+    float hor_delta = (2.0f * PI)/float(latitudes);  //delta_theta = hor_delta
+    float ver_delta = PI/float(longtitudes);         //delta_phi = ver_delta
 
     if(red < redFade) red+=0.01;
     if(green < greenFade) green+=0.01;
@@ -44,9 +50,9 @@ void Sphere::draw(){
 
 
     glColor3f(red, green, blue);
-    for(float i = 0.0; i < 1.0f * M_PI; i += ver_delta){
+    for(float i = 0.0; i < PI; i += ver_delta){
         glBegin(GL_QUAD_STRIP);
-        for(float j = 0.0; j <= 2.0f*M_PI + hor_delta; j += hor_delta){
+        for(float j = 0.0; j <= 2.0f*PI + hor_delta; j += hor_delta){
 
             float xn = sinf(i) * cosf(j);
             float yn = sinf(i) * sinf(j);
@@ -117,6 +123,5 @@ float Sphere::getMass(){
 }
 
 float Sphere::getArea(){
-    return 4 * M_PI * pow(radius, 2);
+    return 4 * PI * std::pow(radius, 2);
 }
-

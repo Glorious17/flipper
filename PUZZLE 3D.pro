@@ -6,11 +6,13 @@
 
 QT       += core gui opengl
 
-LIBS    += -lOpengl32
+greaterThan(QT_MAJOR_VERSION, 5): QT += openglwidgets
+
+win32: LIBS += -lopengl32
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = PUZZLE 3D
+TARGET = Puzzle3D
 TEMPLATE = app
 
 

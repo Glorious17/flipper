@@ -1,11 +1,11 @@
 #ifndef SPHERE_H
 #define SPHERE_H
 
-#include <QOpenGLFunctions>
+#include <QOpenGLFunctions_2_1>
 #include <QVector3D>
 #include "cube.h"
 
-class Sphere : protected QOpenGLFunctions
+class Sphere : protected QOpenGLFunctions_2_1
 {
 public:
     Sphere(QVector3D pos, float radius, float kg);

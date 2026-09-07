@@ -1,12 +1,12 @@
 #ifndef CUBE_H
 #define CUBE_H
 
-#include <QOpenGLFunctions>
+#include <QOpenGLFunctions_2_1>
 #include <QVector3D>
 #include <QMatrix4x4>
 #include "plane.h"
 
-class Cube : protected QOpenGLFunctions
+class Cube : protected QOpenGLFunctions_2_1
 {
 public:
     Cube(QVector3D pos, float width, float height, float length);
