@@ -30,7 +30,14 @@ add_executable(Puzzle3D MACOSX_BUNDLE
     sphere.h
     plane.cpp
     plane.h
+    legacyopenglfunctions.h
 )
+
+target_include_directories(Puzzle3D PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+
+if(APPLE)
+    target_compile_definitions(Puzzle3D PRIVATE GL_SILENCE_DEPRECATION)
+endif()
 
 target_link_libraries(Puzzle3D PRIVATE
     Qt${QT_VERSION_MAJOR}::Core

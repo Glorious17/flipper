@@ -30,9 +30,6 @@ Sphere::~Sphere()
 
 void Sphere::draw(){
 
-    initializeOpenGLFunctions();
-
-
     int latitudes = 90;         //breitengrade = horizontal
     int longtitudes = 90;       //längengrade = vertikal
 

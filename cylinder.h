@@ -1,11 +1,11 @@
 #ifndef CYLINDER_H
 #define CYLINDER_H
 
-#include <QOpenGLFunctions_2_1>
 #include <QVector3D>
 #include <QMatrix4x4>
+#include "legacyopenglfunctions.h"
 
-class Cylinder : protected QOpenGLFunctions_2_1
+class Cylinder : protected LegacyOpenGLFunctions
 {
 public:
     Cylinder(QVector3D pos, float radius, float height);

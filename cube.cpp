@@ -37,8 +37,6 @@ Cube::~Cube(){
 
 void Cube::draw(){
 
-    initializeOpenGLFunctions();
-
     glPushMatrix();
 
     glTranslatef(pos.x(), pos.y(), pos.z());
@@ -189,7 +187,6 @@ float Cube::getXRot(){
 float Cube::getZRot(){
     return zRot;
 }
-
 
 
 

@@ -29,8 +29,6 @@ Cylinder::~Cylinder(){}
 
 void Cylinder::draw(){
 
-    initializeOpenGLFunctions();
-
     glPushMatrix();
 
     glTranslatef(pos.x(), pos.y(), pos.z());
@@ -163,7 +161,6 @@ float Cylinder::getHeight(){
 float Cylinder::getRadius(){
     return radius;
 }
-
 
 
 
