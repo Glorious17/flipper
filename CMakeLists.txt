@@ -16,24 +16,24 @@ if(QT_VERSION_MAJOR GREATER_EQUAL 6)
 endif()
 
 add_executable(Puzzle3D MACOSX_BUNDLE
-    main.cpp
-    mainwindow.cpp
-    mainwindow.h
-    mainwindow.ui
-    qoglwidget.cpp
-    qoglwidget.h
-    cube.cpp
-    cube.h
-    cylinder.cpp
-    cylinder.h
-    sphere.cpp
-    sphere.h
-    plane.cpp
-    plane.h
-    legacyopenglfunctions.h
+    src/main.cpp
+    src/mainwindow.cpp
+    src/mainwindow.h
+    ui/mainwindow.ui
+    src/qoglwidget.cpp
+    src/qoglwidget.h
+    src/cube.cpp
+    src/cube.h
+    src/cylinder.cpp
+    src/cylinder.h
+    src/sphere.cpp
+    src/sphere.h
+    src/plane.cpp
+    src/plane.h
+    src/legacyopenglfunctions.h
 )
 
-target_include_directories(Puzzle3D PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(Puzzle3D PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 if(APPLE)
     target_compile_definitions(Puzzle3D PRIVATE GL_SILENCE_DEPRECATION)

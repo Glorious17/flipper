@@ -1,7 +1,8 @@
 # Puzzle 3D
 
-A small Qt/OpenGL puzzle game. The project supports Qt 5 and Qt 6 and builds as
-a native macOS application bundle, including on Apple Silicon.
+This is a small university project from 2016, created to learn C++ programming.
+It is a Qt/OpenGL puzzle game that supports Qt 5 and Qt 6 and builds as a native
+macOS application bundle, including on Apple Silicon.
 
 ## Build on an Apple Silicon Mac
 

@@ -506,4 +506,3 @@ void QOGLWidget::changeRotation(float dx, float dy)
 
 
 
-

@@ -30,4 +30,3 @@ float Plane::getLength(){
     return length;
 }
 
-
